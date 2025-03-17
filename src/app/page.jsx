@@ -17,7 +17,8 @@ export default function Home() {
 	});
 
 	useEffect(() => {
-		const eventSource = new EventSource("http://localhost:8080/spots");
+		const sourceURL = process.env.API_URL || "http://localhost:8879/spots"
+		const eventSource = new EventSource(sourceURL);
 
 		// TypeScript infers the data type as string from the EventSource object
 		eventSource.onmessage = function (event) {
