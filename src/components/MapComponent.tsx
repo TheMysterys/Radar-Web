@@ -5,7 +5,7 @@ import ImageLayer from "ol/layer/Image";
 import Static from "ol/source/ImageStatic";
 import { useEffect, useRef } from "react";
 import "ol/ol.css";
-import { islandNames, markerLayer } from "@/lib/utils";
+import { islandConfig, islandNames, markerLayer } from "@/lib/utils";
 
 export default function MapComponent({
 	island,
@@ -16,20 +16,21 @@ export default function MapComponent({
 	const mapContainer = useRef(null);
 
 	useEffect(() => {
+		const extent = islandConfig[island].size;
 		const map = new Map({
 			layers: [
 				new ImageLayer({
 					source: new Static({
 						url: `/images/${island}.png`,
-						imageExtent: [0, 0, 512, 512],
+						imageExtent: extent,
 						interpolate: false,
 					}),
 				}),
 			],
 			view: new View({
-				center: [256, 256],
+				center: [extent[2]/2, extent[3]/2],
 				zoom: 2.25,
-				extent: [0, 0, 512, 512],
+				extent: extent,
 			}),
 			pixelRatio: 1,
 		});
