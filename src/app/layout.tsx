@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
 	title: "FishyMap",
-	description: "A map for find fishing spots easily on MCC Island",
+	description: "A map for finding fishing spots easily on MCC Island",
 };
 
 export default function RootLayout({
