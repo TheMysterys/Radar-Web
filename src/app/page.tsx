@@ -77,8 +77,15 @@ export default function Home() {
 				firstLoad = true;
 				return;
 			}
+
 			addSpot(data);
 		};
+
+		eventSource.addEventListener("CLEAR", (event) => {
+			const data = JSON.parse(event.data);
+
+			setSpots(data);
+		});
 
 		// Optional: Handle errors
 		eventSource.onerror = (error) => {
@@ -203,7 +210,9 @@ export default function Home() {
 						</div>
 					</div>
 					<div id="spots" className="flex flex-col mt-2 gap-y-2">
-						<span>Total Spots on Island: {spots[island].length}</span>
+						<span>
+							Total Spots on Island: {spots[island].length}
+						</span>
 						{filteredSpots.map((spot, i) => {
 							return (
 								<div
@@ -211,7 +220,7 @@ export default function Home() {
 									className="border-2 rounded-lg p-2"
 								>
 									<p>Cords: {spot.cords}</p>
-									<p>Perks: {formatPerks(spot)}</p> 
+									<p>Perks: {formatPerks(spot)}</p>
 									<p>Found by: {spot.foundBy ?? "Hidden"}</p>
 								</div>
 							);
