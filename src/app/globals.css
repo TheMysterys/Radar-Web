@@ -3,17 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+	--background: #0a0a0a;
+	--foreground: #ededed;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+	color: var(--foreground);
+	background: var(--background);
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 .map {
-  height: 90dvh;
-  background-color: #0a0a0a;
+	height: 90dvh;
+	background-color: #0a0a0a;
+}
+
+._10 {
+  background-image: radial-gradient(transparent 0%, #fefe3f99 80%);
+  border-color: #fefe3f;
+
+}
+
+._20 {
+  background-image: radial-gradient(transparent 0%, #3ffe3f99 80%);
+  border-color: #3ffe3f;
+}
+
+._30 {
+	background-image: radial-gradient(transparent 0%, #3ffefe99 80%);
+  border-color: #3ffefe;
+}
+
+._0 {
+  background-image: radial-gradient(transparent 0%, #ffffff99 80%);
 }

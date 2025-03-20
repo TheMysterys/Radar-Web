@@ -1,6 +1,17 @@
 "use client";
+import FilterMenu from "@/components/FilterMenu";
 import MapComponent from "@/components/MapComponent";
-import { addMarker, clearMarkers, islandConfig, perkColors } from "@/lib/utils";
+import {
+	addMarker,
+	clearMarkers,
+	Filter,
+	filterFishingSpots,
+	FishingSpot,
+	formatPerks,
+	islandConfig,
+	islandNames,
+	perkColors,
+} from "@/lib/utils";
 import { Feature } from "ol";
 import { Circle } from "ol/geom";
 import Fill from "ol/style/Fill";
@@ -9,9 +20,25 @@ import Style from "ol/style/Style";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-	const [island, setIsland] = useState("temperate_1");
-	const [filterMenuOpen, setFilterMenuOpen] = useState(false);
-	const [spots, setSpots] = useState({
+	const [island, setIsland] = useState<islandNames>("temperate_1");
+	const [selectedFilters, setSelectedFilters] = useState<Filter>({
+		hooks: {
+			strong: "0",
+			wise: "0",
+			glimmering: "0",
+			greedy: "0",
+			lucky: "0",
+		},
+		magnets: { xp: "0", fish: "0", pearl: "0", treasure: "0", spirit: "0" },
+		lures: {
+			strong: "0",
+			wise: "0",
+			glimmering: "0",
+			greedy: "0",
+			lucky: "0",
+		},
+	});
+	const [spots, setSpots] = useState<{ [k: string]: FishingSpot[] }>({
 		temperate_1: [],
 		temperate_2: [],
 		temperate_3: [],
@@ -23,15 +50,34 @@ export default function Home() {
 		barren_3: [],
 	});
 
+	const [filteredSpots, setFilteredSpots] = useState<FishingSpot[]>([]);
+
+	function addSpot(data: { island: islandNames; spot: FishingSpot }) {
+		if (spots[data.island]) {
+			setSpots((prevSpots) => ({
+				...prevSpots,
+				[data.island]: [...prevSpots[data.island], data.spot],
+			}));
+		} else {
+			console.warn(`Category "${data.island}" does not exist.`);
+		}
+	}
+
 	useEffect(() => {
 		const sourceURL = process.env.API_URL || "http://localhost:8879/spots";
 		const eventSource = new EventSource(sourceURL);
 
+		let firstLoad = false;
 		// TypeScript infers the data type as string from the EventSource object
 		eventSource.onmessage = function (event) {
 			// Parse the event data (which is a stringified JSON)
 			const data = JSON.parse(event.data);
-			setSpots(data);
+			if (!firstLoad) {
+				setSpots(data);
+				firstLoad = true;
+				return;
+			}
+			addSpot(data);
 		};
 
 		// Optional: Handle errors
@@ -46,9 +92,13 @@ export default function Home() {
 	}, []);
 
 	useEffect(() => {
+		const newFilteredSpots = filterFishingSpots(
+			spots[island],
+			selectedFilters
+		);
 		clearMarkers();
-		if (spots[island].length > 0) {
-			spots[island].map((spot) => {
+		if (newFilteredSpots.length > 0) {
+			newFilteredSpots.map((spot) => {
 				const xOffset = islandConfig[island].x.min;
 				const zOffset = islandConfig[island].y.min;
 
@@ -70,9 +120,7 @@ export default function Home() {
 				marker.setStyle(
 					new Style({
 						fill: new Fill({
-							color: perkColors[
-								spot.perks[0].split(" ")[1].toLowerCase()
-							],
+							color: perkColors[spot.color],
 						}),
 						stroke: new Stroke({
 							color: "white",
@@ -84,7 +132,8 @@ export default function Home() {
 				addMarker(marker);
 			});
 		}
-	}, [spots, island]);
+		setFilteredSpots(newFilteredSpots);
+	}, [selectedFilters, spots, island]);
 
 	return (
 		<>
@@ -94,24 +143,25 @@ export default function Home() {
 			>
 				<h1>FishyMap</h1>
 			</div>
-			<dialog id="filterMenu" open={filterMenuOpen} className="relative z-10 bg-black p-3 text-white backdrop:bg-gray-700 backdrop:bg-opacity-70" >
-				<div className="flex flex-col gap-5">
-					<h1>Filter Menu</h1>
-					<div><h3>Hooks</h3></div>
-					<div><h3>Magnets</h3></div>
-					<div>
-						<h3>Special</h3>
-						<div className="flex gap-2">
-							<button className="p-2 bg-slate-500 rounded-lg enabled:bg-slate-700">Elusive Chance</button>
-							<button className="p-2 bg-slate-500 rounded-lg enabled:bg-slate-700">Wayfind Data</button>
-							<button className="p-2 bg-slate-500 rounded-lg enabled:bg-slate-700">Pearl Chance</button>
-
-						</div>
-					</div>
-					<button className="bg-slate-800 p-1 rounded-lg border-2 border-slate-700 hover:bg-slate-700" onClick={() => {
-						document.getElementById("filterMenu").close()
-					}}>Close</button>
-				</div>
+			<dialog
+				id="filterMenu"
+				className="bg-black p-3 text-white rounded-lg backdrop:bg-gray-700 backdrop:bg-opacity-70 space-y-2"
+			>
+				<FilterMenu
+					selectedFilters={selectedFilters}
+					setSelectedFilters={setSelectedFilters}
+				/>
+				<button
+					className="bg-slate-800 p-1 rounded-lg border-2 border-slate-700 hover:bg-slate-700"
+					onClick={() => {
+						const modal = document.getElementById(
+							"filterMenu"
+						) as HTMLDialogElement;
+						modal.close();
+					}}
+				>
+					Close
+				</button>
 			</dialog>
 			<div id="content" className="grid-cols-4 md:grid">
 				<MapComponent island={island} />
@@ -119,7 +169,9 @@ export default function Home() {
 					<select
 						className="w-full rounded-lg bg-slate-800 p-2"
 						value={island}
-						onChange={(e) => setIsland(e.target.value)}
+						onChange={(e) =>
+							setIsland(e.target.value as islandNames)
+						}
 					>
 						<option value="temperate_1">Verdant Woods</option>
 						<option value="temperate_2">Floral Forest</option>
@@ -137,21 +189,29 @@ export default function Home() {
 							Spots
 						</h2>
 						<div>
-							<button className="bg-slate-800 p-2 rounded-lg border-2 border-slate-700 hover:bg-slate-700" onClick={() => {
-								document.getElementById("filterMenu").showModal()
-							}}>Filter Menu</button>
+							<button
+								className="bg-slate-800 p-2 rounded-lg border-2 border-slate-700 hover:bg-slate-700"
+								onClick={() => {
+									const modal = document.getElementById(
+										"filterMenu"
+									) as HTMLDialogElement;
+									modal.showModal();
+								}}
+							>
+								Filter Menu
+							</button>
 						</div>
 					</div>
 					<div id="spots" className="flex flex-col mt-2 gap-y-2">
-						<span>Total Spots: {spots[island].length}</span>
-						{spots[island].map((spot, i) => {
+						<span>Total Spots on Island: {spots[island].length}</span>
+						{filteredSpots.map((spot, i) => {
 							return (
 								<div
 									key={i}
 									className="border-2 rounded-lg p-2"
 								>
 									<p>Cords: {spot.cords}</p>
-									<p>Perks: {spot.perks}</p>
+									<p>Perks: {formatPerks(spot)}</p> 
 									<p>Found by: {spot.foundBy ?? "Hidden"}</p>
 								</div>
 							);

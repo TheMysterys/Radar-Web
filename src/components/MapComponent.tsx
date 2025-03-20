@@ -11,7 +11,6 @@ export default function MapComponent({
 	island,
 }: {
 	island: islandNames;
-	spots: [{ cords: string; players: object[]; perks: string[] }];
 }) {
 	const mapContainer = useRef(null);
 
