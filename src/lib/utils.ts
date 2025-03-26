@@ -69,7 +69,7 @@ export const perkColors: { [k: string]: string } = {
 	strong: "#fc5454",
 	wise: "#2199f0",
 	glimmering: "#8632fc",
-	greedy: "#fc7d3f",
+	greedy: "#f27500",
 	lucky: "#23c525",
 };
 

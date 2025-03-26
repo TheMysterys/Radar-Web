@@ -119,7 +119,7 @@ export default function Home() {
 				const marker = new Feature({
 					geometry: new Circle([x, z], 2.5),
 					name: "Fishing Spot",
-					fishingSpot: spot
+					fishingSpot: spot,
 				});
 
 				marker.setStyle(
@@ -144,10 +144,19 @@ export default function Home() {
 		<main className="h-dvh flex flex-col">
 			<div
 				id="nav"
-				className="my-2 ml-4 flex space-x-2 text-xl font-semibold"
+				className="my-2 mx-4 flex space-x-2 text-xl font-semibold items-center justify-between"
 			>
-				<img src="/icon.png" className="w-7 h-7 " />
-				<h1>Radar</h1>
+				<div className="flex gap-2">
+					<img src="/icon.png" className="w-7 h-7 " />
+					<h1>Radar</h1>
+				</div>
+				<a
+					href="https://modrinth.com/project/radar"
+					target="_blank"
+					className="font-normal hover:text-blue-400 transition-colors duration-500"
+				>
+					Contribute
+				</a>
 			</div>
 			<dialog
 				id="filterMenu"
@@ -169,7 +178,10 @@ export default function Home() {
 					Close
 				</button>
 			</dialog>
-			<div id="content" className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
+			<div
+				id="content"
+				className="flex-1 flex flex-col md:flex-row md:overflow-hidden"
+			>
 				<MapComponent island={island} />
 				<div
 					id="list"
@@ -216,20 +228,18 @@ export default function Home() {
 						id="spots"
 						className="flex-1 overflow-y-auto mt-4 space-y-2 pr-3 -mr-3"
 					>
-							{filteredSpots.map((spot, i) => {
-								return (
-									<div
-										key={i}
-										className="border-2 rounded-lg p-2"
-									>
-										<p>Cords: {spot.cords}</p>
-										<p>Perks: {formatPerks(spot)}</p>
-										<p>
-											Found by: {spot.foundBy ?? "Hidden"}
-										</p>
-									</div>
-								);
-							})}
+						{filteredSpots.map((spot, i) => {
+							return (
+								<div
+									key={i}
+									className="border-2 rounded-lg p-2"
+								>
+									<p>Cords: {spot.cords}</p>
+									<p>Perks: {formatPerks(spot)}</p>
+									<p>Found by: {spot.foundBy ?? "Hidden"}</p>
+								</div>
+							);
+						})}
 					</div>
 				</div>
 			</div>
