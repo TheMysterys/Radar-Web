@@ -6,7 +6,7 @@ const categories: { [k: string]: string[] } = {
 	lures: ["strong", "wise", "glimmering", "greedy", "lucky"],
 };
 
-const filterLevels = ["off", "0", "10", "20", "30"];
+const filterLevels = ["0", "10", "20", "30"];
 
 interface FilterProps {
 	selectedFilters: Record<string, Record<string, string>>;
@@ -102,9 +102,6 @@ export default function FilterMenu({
 			<h1 className="text-2xl font-semibold">Filter Menu</h1>
 
 			<div className="flex gap-x-2 *:flex-grow ">
-				<div className="flex p-2 rounded border-2 font-bold select-none items-center justify-center">
-					Off
-				</div>
 				<div className="flex p-2 rounded border-2 font-bold select-none items-center justify-center _0">
 					On
 				</div>

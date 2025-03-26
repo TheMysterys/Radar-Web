@@ -119,9 +119,7 @@ export default function Home() {
 				const marker = new Feature({
 					geometry: new Circle([x, z], 2.5),
 					name: "Fishing Spot",
-					foundBy: spot.foundBy,
-					perks: spot.perks,
-					cords: spot.cords,
+					fishingSpot: spot
 				});
 
 				marker.setStyle(
@@ -143,12 +141,13 @@ export default function Home() {
 	}, [selectedFilters, spots, island]);
 
 	return (
-		<>
+		<main className="h-dvh flex flex-col">
 			<div
 				id="nav"
 				className="my-2 ml-4 flex space-x-2 text-xl font-semibold"
 			>
-				<h1>FishyMap</h1>
+				<img src="/icon.png" className="w-7 h-7 " />
+				<h1>Radar</h1>
 			</div>
 			<dialog
 				id="filterMenu"
@@ -170,9 +169,12 @@ export default function Home() {
 					Close
 				</button>
 			</dialog>
-			<div id="content" className="grid-cols-4 md:grid">
+			<div id="content" className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
 				<MapComponent island={island} />
-				<div id="list" className="mt-4 px-2 text-xl md:mt-0">
+				<div
+					id="list"
+					className="mt-4 flex w-full flex-col px-4 text-xl md:mt-0 md:w-96"
+				>
 					<select
 						className="w-full rounded-lg bg-slate-800 p-2"
 						value={island}
@@ -190,7 +192,7 @@ export default function Home() {
 						<option value="barren_2">Blazing Canyon</option>
 						<option value="barren_3">Ashen Wastes</option>
 					</select>
-					<hr className="-mx-2 my-2 border-gray-600 p-0" />
+					<hr className="-mx-4 my-2 border-gray-600 p-0" />
 					<div className="flex justify-between">
 						<h2 className="mr-4 mt-2 text-2xl font-semibold">
 							Spots
@@ -209,25 +211,28 @@ export default function Home() {
 							</button>
 						</div>
 					</div>
-					<div id="spots" className="flex flex-col mt-2 gap-y-2">
-						<span>
-							Total Spots on Island: {spots[island].length}
-						</span>
-						{filteredSpots.map((spot, i) => {
-							return (
-								<div
-									key={i}
-									className="border-2 rounded-lg p-2"
-								>
-									<p>Cords: {spot.cords}</p>
-									<p>Perks: {formatPerks(spot)}</p>
-									<p>Found by: {spot.foundBy ?? "Hidden"}</p>
-								</div>
-							);
-						})}
+					<p>Total Spots on Island: {spots[island].length}</p>
+					<div
+						id="spots"
+						className="flex-1 overflow-y-auto mt-4 space-y-2 pr-3 -mr-3"
+					>
+							{filteredSpots.map((spot, i) => {
+								return (
+									<div
+										key={i}
+										className="border-2 rounded-lg p-2"
+									>
+										<p>Cords: {spot.cords}</p>
+										<p>Perks: {formatPerks(spot)}</p>
+										<p>
+											Found by: {spot.foundBy ?? "Hidden"}
+										</p>
+									</div>
+								);
+							})}
 					</div>
 				</div>
 			</div>
-		</>
+		</main>
 	);
 }
