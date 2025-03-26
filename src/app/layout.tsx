@@ -10,7 +10,11 @@ export const metadata: Metadata = {
 	},
 	openGraph: {
 		images: "/icon.png",
+		type: "website",
 	},
+	twitter: {
+		card: "summary",
+	}
 };
 
 export default function RootLayout({
