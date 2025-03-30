@@ -5,11 +5,18 @@ import ImageLayer from "ol/layer/Image";
 import Static from "ol/source/ImageStatic";
 import { useEffect, useRef } from "react";
 import "ol/ol.css";
-import { FishingSpot, formatPerks, islandConfig, islandNames, markerLayer, perkColors } from "@/lib/utils";
+import {
+	FishingSpot,
+	formatPerks,
+	islandConfig,
+	IslandNames,
+	markerLayer,
+	perkColors,
+} from "@/lib/utils";
 import { FeatureLike } from "ol/Feature";
 import { Pixel } from "ol/pixel";
 
-export default function MapComponent({ island }: { island: islandNames }) {
+export default function MapComponent({ island }: { island: IslandNames }) {
 	const mapContainer = useRef(null);
 
 	useEffect(() => {
@@ -44,17 +51,60 @@ export default function MapComponent({ island }: { island: islandNames }) {
 						return feature;
 				  });
 			if (feature) {
-				info!.style.left = pixel[0]+10 + "px";
-				info!.style.top = pixel[1] + "px";
+				const mapSize = map.getSize();
+				if (!mapSize) return;
+
+				const mapRect = map.getTargetElement().getBoundingClientRect(); // Get map's viewport boundaries
+				const viewportMidX = (mapRect.left + mapRect.right) / 2; // Midpoint of the visible viewport
+				const featureCoord = map.getCoordinateFromPixel(pixel); // Get feature coordinate
+				const isRightSide = featureCoord[0] > viewportMidX;
+
+				const extraPadding = 15; // Extra padding to ensure tooltip doesn't touch the right edge
+				let tooltipX =
+					pixel[0] +
+					(isRightSide ? -10 - info!.offsetWidth - extraPadding : 10); // Shift left if needed
+				let tooltipY = pixel[1] + 10; // Default below cursor
+
+				// Ensure tooltip stays within the map viewport
+				const mapLeft = mapRect.left;
+				const mapRight = mapRect.right;
+				const mapTop = mapRect.top;
+				const mapBottom = mapRect.bottom;
+				const tooltipWidth = info!.offsetWidth;
+				const tooltipHeight = info!.offsetHeight;
+
+				// Prevent left overflow
+				if (tooltipX + mapLeft < mapLeft) {
+					tooltipX = 5; // Keep a small gap from the left
+				}
+
+				// Prevent right overflow
+				if (tooltipX + tooltipWidth + mapLeft > mapRight) {
+					tooltipX = mapRight - mapLeft - tooltipWidth - extraPadding; // Shift left more
+				}
+
+				// Prevent bottom overflow
+				if (tooltipY + tooltipHeight + mapTop > mapBottom) {
+					tooltipY = pixel[1] - tooltipHeight - 10; // Move above cursor
+				}
+
+				// Prevent top overflow
+				if (tooltipY + mapTop < mapTop) {
+					tooltipY = 5;
+				}
+
+				info!.style.left = `${tooltipX}px`;
+				info!.style.top = `${tooltipY}px`;
+
 				if (feature !== currentFeature) {
 					info!.style.visibility = "visible";
-					const spot: FishingSpot = feature.get("fishingSpot")
-					info!.innerText = [
-						`Cords: ${spot.cords}`,
-						`Perks: ${formatPerks(spot)}`,
-						`Found By: ${spot.foundBy}`
+					const spot: FishingSpot = feature.get("fishingSpot");
+					info!.innerHTML = [
+						`<p>Cords: ${spot.cords}</p>`,
+						`<p>Perks: ${formatPerks(spot)}</p>`,
+						`<p>Found By: ${spot.foundBy}</p>`,
 					].join("\n");
-					info!.style.borderColor = perkColors[spot.color]
+					info!.style.borderColor = perkColors[spot.color];
 				}
 			} else {
 				info!.style.visibility = "hidden";
@@ -62,18 +112,18 @@ export default function MapComponent({ island }: { island: islandNames }) {
 			currentFeature = feature;
 		};
 
-		map.on('pointermove', function (evt) {
+		map.on("pointermove", function (evt) {
 			if (evt.dragging) {
-			  info!.style.visibility = 'hidden';
-			  currentFeature = undefined;
-			  return;
+				info!.style.visibility = "hidden";
+				currentFeature = undefined;
+				return;
 			}
 			displayFeatureInfo(evt.pixel, evt.originalEvent.target);
-		  });
-		  
-		  map.on('click', function (evt) {
+		});
+
+		map.on("click", function (evt) {
 			displayFeatureInfo(evt.pixel, evt.originalEvent.target);
-		  });
+		});
 
 		map.setTarget(mapContainer.current!);
 		return () => map.setTarget(undefined);
