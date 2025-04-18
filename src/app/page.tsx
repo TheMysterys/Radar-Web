@@ -21,12 +21,8 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
 	const [island, setIsland] = useState<IslandNames>("temperate_1");
-	const [selectedFilters, setSelectedFilters] = useState<Filter[]>(() => {
-		return JSON.parse(window.localStorage.getItem("filter") as string) || []
-	});
-	const [enforce, setEnforce] = useState(() => {
-		return JSON.parse(window.localStorage.getItem("enforce") as string) || false
-	});
+	const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
+	const [enforce, setEnforce] = useState(false);
 	const [spots, setSpots] = useState<{ [k: string]: FishingSpot[] }>({
 		temperate_1: [],
 		temperate_2: [],
@@ -52,41 +48,69 @@ export default function Home() {
 		}
 	}
 
+	// Fetch data from API
+
+	const [connectionStatus, setConnectionStatus] = useState<
+		"connected" | "reconnecting" | "failed" | "connecting"
+	>("connecting");
+
 	useEffect(() => {
 		const sourceURL = process.env.API_URL || "http://localhost:8879/spots";
-		const eventSource = new EventSource(sourceURL);
 
+		let eventSource: EventSource | null = null;
+		let reconnectTimeout: NodeJS.Timeout;
 		let firstLoad = false;
-		// TypeScript infers the data type as string from the EventSource object
-		eventSource.onmessage = function (event) {
-			// Parse the event data (which is a stringified JSON)
-			const data = JSON.parse(event.data);
-			if (!firstLoad) {
+		let reconnectAttempts = 0;
+		const maxRetries = 5;
+		const retryDelay = 3000; // 3 seconds
+
+		const connect = () => {
+			eventSource = new EventSource(sourceURL);
+
+			eventSource.onopen = () => {
+				setConnectionStatus("connected");
+				reconnectAttempts = 0;
+			};
+
+			eventSource.onmessage = (event) => {
+				const data = JSON.parse(event.data);
+				if (!firstLoad) {
+					setSpots(data);
+					firstLoad = true;
+					return;
+				}
+				addSpot(data);
+			};
+
+			eventSource.addEventListener("CLEAR", (event) => {
+				const data = JSON.parse(event.data);
 				setSpots(data);
-				firstLoad = true;
-				return;
-			}
+			});
 
-			addSpot(data);
+			eventSource.onerror = (err) => {
+				console.warn("EventSource failed:", err);
+				eventSource?.close();
+
+				if (reconnectAttempts < maxRetries) {
+					reconnectAttempts++;
+					setConnectionStatus("reconnecting");
+
+					reconnectTimeout = setTimeout(connect, retryDelay);
+				} else {
+					setConnectionStatus("failed");
+				}
+			};
 		};
 
-		eventSource.addEventListener("CLEAR", (event) => {
-			const data = JSON.parse(event.data);
+		connect(); // Initial connection
 
-			setSpots(data);
-		});
-
-		// Optional: Handle errors
-		eventSource.onerror = (error) => {
-			console.warn("EventSource failed:", error);
-		};
-
-		// Close connection when the component is unmounted
 		return () => {
-			eventSource.close();
+			eventSource?.close();
+			clearTimeout(reconnectTimeout);
 		};
 	}, []);
 
+	// Update markers on the map
 	useEffect(() => {
 		const newFilteredSpots = filterFishingSpots(
 			spots[island],
@@ -130,13 +154,47 @@ export default function Home() {
 		setFilteredSpots(newFilteredSpots);
 	}, [selectedFilters, spots, island, enforce]);
 
+	// Persistent State for filter and enforce
+
+	// Load state
 	useEffect(() => {
-		localStorage.setItem("filter", JSON.stringify(selectedFilters))
-		localStorage.setItem("enforce", JSON.stringify(enforce))
-	}, [selectedFilters, enforce])
+		const storedFilters = window.localStorage.getItem("filter");
+		const storedEnforce = window.localStorage.getItem("enforce");
+
+		if (storedFilters) {
+			setSelectedFilters(JSON.parse(storedFilters));
+		}
+		if (storedEnforce) {
+			setEnforce(JSON.parse(storedEnforce));
+		}
+	}, []);
+
+	// Save state
+	useEffect(() => {
+		localStorage.setItem("filter", JSON.stringify(selectedFilters));
+		localStorage.setItem("enforce", JSON.stringify(enforce));
+	}, [selectedFilters, enforce]);
 
 	return (
 		<main className="h-dvh flex flex-col">
+			{connectionStatus === "connecting" && (
+				<div className="absolute bottom-5 left-5 z-50 rounded-lg bg-green-400 p-2 text-lg font-bold text-black">
+					Connecting to server...
+				</div>
+			)}
+
+			{connectionStatus === "reconnecting" && (
+				<div className="absolute bottom-5 left-5 z-50 rounded-lg bg-orange-400 p-2 text-lg font-bold text-black">
+					Reconnecting to server...
+				</div>
+			)}
+
+			{connectionStatus === "failed" && (
+				<div className="absolute bottom-5 left-5 z-50 rounded-lg bg-red-400 p-2 text-lg font-bold text-black">
+					Failed to connect to server.
+				</div>
+			)}
+			
 			<div
 				id="nav"
 				className="my-2 mx-4 flex space-x-2 text-xl font-semibold items-center justify-between"
