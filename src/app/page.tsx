@@ -21,8 +21,12 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
 	const [island, setIsland] = useState<IslandNames>("temperate_1");
-	const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
-	const [enforce, setEnforce] = useState(false);
+	const [selectedFilters, setSelectedFilters] = useState<Filter[]>(() => {
+		return JSON.parse(window.localStorage.getItem("filter") as string) || []
+	});
+	const [enforce, setEnforce] = useState(() => {
+		return JSON.parse(window.localStorage.getItem("enforce") as string) || false
+	});
 	const [spots, setSpots] = useState<{ [k: string]: FishingSpot[] }>({
 		temperate_1: [],
 		temperate_2: [],
@@ -125,6 +129,11 @@ export default function Home() {
 		}
 		setFilteredSpots(newFilteredSpots);
 	}, [selectedFilters, spots, island, enforce]);
+
+	useEffect(() => {
+		localStorage.setItem("filter", JSON.stringify(selectedFilters))
+		localStorage.setItem("enforce", JSON.stringify(enforce))
+	}, [selectedFilters, enforce])
 
 	return (
 		<main className="h-dvh flex flex-col">
