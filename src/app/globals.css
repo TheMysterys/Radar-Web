@@ -37,18 +37,3 @@ body {
 	pointer-events: none;
 	border-width: 2px;
 }
-
-._10 {
-	background-image: radial-gradient(transparent 0%, #ffffff99 80%);
-	border-color: #ffffff;
-}
-
-._20 {
-	background-image: radial-gradient(transparent 0%, #3ffe3f99 80%);
-	border-color: #3ffe3f;
-}
-
-._30 {
-	background-image: radial-gradient(transparent 0%, #3ffefe99 80%);
-	border-color: #3ffefe;
-}

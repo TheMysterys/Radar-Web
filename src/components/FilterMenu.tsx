@@ -1,4 +1,11 @@
-import { Filter } from "@/lib/utils";
+"use client";
+import { capitalize, Filter, renamePerks } from "@/lib/utils";
+import { SetStateAction, useState } from "react";
+
+export interface Option {
+	value: string;
+	label: string;
+}
 
 const categories: { [k: string]: string[] } = {
 	hooks: ["strong", "wise", "glimmering", "greedy", "lucky"],
@@ -6,220 +13,140 @@ const categories: { [k: string]: string[] } = {
 	lures: ["strong", "wise", "glimmering", "greedy", "lucky"],
 };
 
-const filterLevels = ["0", "10", "20", "30"];
+// Build options for a category
+const allOptions: Option[] = Object.entries(categories).flatMap(
+	([category, names]) =>
+		names.map((name) => ({
+			value: `${name}_${category}`,
+			label: renamePerks(name, category),
+		}))
+);
 
 interface FilterProps {
-	selectedFilters: Record<string, Record<string, string>>;
-	setSelectedFilters: React.Dispatch<React.SetStateAction<Filter>>;
+	selectedFilters: Filter[];
+	setSelectedFilters: React.Dispatch<SetStateAction<Filter[]>>;
+	enforce: boolean;
+	setEnforce: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export default function FilterMenu({
 	selectedFilters,
 	setSelectedFilters,
+	enforce,
+	setEnforce,
 }: FilterProps) {
-	// Function to cycle through filter states
-	const toggleFilter = (category: keyof Filter, option: string) => {
-		setSelectedFilters((prev) => {
-			const current = prev[category]?.[option] || "Off";
-			const nextState =
-				filterLevels[
-					(filterLevels.indexOf(current) + 1) % filterLevels.length
-				];
-
-			return {
-				...prev,
-				[category]: { ...prev[category], [option]: nextState },
-			};
-		});
-	};
-
-	const toggleOnOff = (category: keyof Filter, option: string) => {
-		setSelectedFilters((prev) => {
-			const current = prev[category]?.[option] || "Off";
-			const nextState = current == "0" ? "off" : "0";
-
-			return {
-				...prev,
-				[category]: { ...prev[category], [option]: nextState },
-			};
-		});
-	};
-
-	// Function to cycle through all filter states for a category
-	const toggleAll = (category: keyof Filter) => {
-		setSelectedFilters((prev) => {
-			const currentCategory = prev[category] ?? {}; // Ensure it's an object
-			const allStates = Object.values(currentCategory);
-			const allSame =
-				allStates.filter(
-					(value) =>
-						value ===
-						Object.values(selectedFilters[category] ?? {})[0]
-				).length === allStates.length;
-
-			const nextStateIndex = allSame
-				? (filterLevels.indexOf(allStates[0] || "off") + 1) %
-				  filterLevels.length
-				: 1;
-
-			const nextState = filterLevels[nextStateIndex];
-
-			const newCategoryState = Object.fromEntries(
-				categories[category].map((option) => [option, nextState]) // Apply the same state to all options
-			);
-
-			return { ...prev, [category]: newCategoryState };
-		});
-	};
-
-	const toggleAllOnOff = (category: keyof Filter) => {
-		setSelectedFilters((prev) => {
-			const currentCategory = prev[category] ?? {}; // Ensure it's an object
-			const allStates = Object.values(currentCategory);
-			const allSame =
-				allStates.filter(
-					(value) =>
-						value ===
-						Object.values(selectedFilters[category] ?? {})[0]
-				).length === allStates.length;
-
-			const nextState = allSame
-				? allStates[0] == "0"
-					? "off"
-					: "0"
-				: "0";
-
-			const newCategoryState = Object.fromEntries(
-				categories[category].map((option) => [option, nextState]) // Apply the same state to all options
-			);
-
-			return { ...prev, [category]: newCategoryState };
-		});
-	};
+	const [selected, setSelected] = useState<string>(allOptions[0].value);
+	const [selectedValue, setSelectedValue] = useState<string>("10");
 
 	return (
-		<div className="*:select-none ">
+		<div className="*:select-none h-96">
 			<h1 className="text-2xl font-semibold">Filter Menu</h1>
 
-			<div className="flex gap-x-2 *:flex-grow ">
-				<div className="flex p-2 rounded border-2 font-bold select-none items-center justify-center _0">
-					On
+			<div className="flex gap-x-2 items-center">
+				<div className="flex">
+					<select
+						className="bg-black border rounded-l-lg p-1"
+						value={selected}
+						onChange={(e) => setSelected(e.target.value)}
+					>
+						{allOptions.map((value) => (
+							<option key={value.value} value={value.value}>
+								{value.label}
+							</option>
+						))}
+					</select>
+					<select
+						className="bg-black border rounded-r-lg p-1"
+						value={selectedValue}
+						onChange={(e) => setSelectedValue(e.target.value)}
+					>
+						<option value={10}>+10%</option>
+						<option value={20}>+20%</option>
+						<option value={30}>+30%</option>
+					</select>
+					<button
+						className="border rounded-lg p-1 ml-2"
+						onClick={() => {
+							const [type, category] = selected.split("_");
+							if (
+								selectedFilters.some((e) => {
+									return (
+										e.category === category &&
+										e.type === type
+									);
+								})
+							) {
+								setSelectedFilters((prev) => {
+									const index = prev.findIndex(
+										(e) =>
+											e.category === category &&
+											e.type === type
+									);
+									prev.splice(index, 1, {
+										type,
+										category,
+										amount:
+											category == "lures"
+												? null
+												: selectedValue,
+									});
+									return [...prev];
+								});
+							} else {
+								setSelectedFilters((prev) => [
+									...prev,
+									{
+										type,
+										category,
+										amount:
+											category == "lures"
+												? null
+												: selectedValue,
+									},
+								]);
+							}
+						}}
+					>
+						+ Add
+					</button>
 				</div>
-				<div className="flex p-2 rounded border-2 font-bold select-none items-center justify-center _10">
-					+10%
-				</div>
-				<div className="flex p-2 rounded border-2 font-bold select-none items-center justify-center _20">
-					+20%
-				</div>
-				<div className="flex p-2 rounded border-2 font-bold select-none items-center justify-center _30">
-					+30%
+				<div>
+					<input
+						type="checkbox"
+						checked={enforce}
+						onChange={() => setEnforce(!enforce)}
+					/>
+					<label>Match All</label>
 				</div>
 			</div>
-
-			{Object.entries(categories).map(([category, options]) => (
-				<div key={category}>
-					{category !== "lures" ? (
-						<div className="mb-4">
-							<h3 className="font-semibold text-lg">
-								{category.toUpperCase()}
-							</h3>
-							<div className="flex gap-2 flex-wrap mt-2">
-								{/* "Select All" Button */}
-								<button
-									className={`flex p-2 rounded border-2 font-bold items-center _${
-										Object.values(
-											selectedFilters[category] ?? {}
-										).filter(
-											(value) =>
-												value ===
-												Object.values(
-													selectedFilters[category] ??
-														{}
-												)[0]
-										).length === options.length
-											? Object.values(
-													selectedFilters[category] ??
-														{}
-											  )[0]
-											: "off"
-									}`}
-									onClick={() =>
-										toggleAll(category as keyof Filter)
-									}
-								>
-									<span className="w-8">All</span>
-								</button>
-
-								{/* Individual Filter Buttons */}
-								{options.map((option) => (
-									<button
-										key={`${category}-${option}`}
-										className={`p-2 rounded border-2 _${selectedFilters[category]?.[option]}`}
-										onClick={() =>
-											toggleFilter(
-												category as keyof Filter,
-												option
-											)
-										}
-									>
-										<img
-											src={`https://cdn.islandstats.xyz/fishing/perks/${category}/${option}.png`}
-											className="w-8"
-										/>
-									</button>
-								))}
-							</div>
-						</div>
-					) : (
-						<div className="mb-4">
-							<h3 className="font-semibold text-lg">
-								{category.toUpperCase()}
-							</h3>
-							<div className="flex gap-2 flex-wrap mt-2">
-								{/* "Select All" Button */}
-								<button
-									className={`flex p-2 rounded border-2 font-bold select-none items-center _${
-										Object.values(
-											selectedFilters[category] ?? {}
-										).filter(
-											(value) =>
-												value ===
-												Object.values(
-													selectedFilters[category] ??
-														{}
-												)[0]
-										).length === options.length
-											? Object.values(
-													selectedFilters[category] ??
-														{}
-											  )[0]
-											: "off"
-									}`}
-									onClick={() => toggleAllOnOff(category)}
-								>
-									<span className="w-8">All</span>
-								</button>
-
-								{/* Individual Filter Buttons */}
-								{options.map((option) => (
-									<button
-										key={`${category}-${option}`}
-										className={`p-2 rounded border-2 _${selectedFilters[category]?.[option]}`}
-										onClick={() =>
-											toggleOnOff(category, option)
-										}
-									>
-										<img
-											src={`https://cdn.islandstats.xyz/fishing/perks/${category}/${option}.png`}
-											className="w-8"
-										/>
-									</button>
-								))}
-							</div>
-						</div>
-					)}
-				</div>
-			))}
+			<div className="flex flex-wrap gap-2 mt-4">
+				{selectedFilters.map((filter, index) => (
+					<div key={index} className="flex bg-neutral-800 rounded-lg">
+						<button
+							className="p-1 mx-1 text-center items-center"
+							onClick={() => {
+								setSelectedFilters((prev) => {
+									return prev.filter((_, i) => i !== index);
+								});
+							}}
+						>
+							X
+						</button>
+						<img
+							src={`https://cdn.islandstats.xyz/fishing/perks/${filter.category}/${filter.type}.png`}
+							className="w-6 h-6 self-center"
+						/>
+						<span className="py-1 mr-1 flex-grow">
+							{renamePerks(filter.type, filter.category)}
+						</span>
+						{filter.amount && (
+							<span className="bg-neutral-500 h-full p-1 rounded-r-lg">
+								{filter.amount}%
+							</span>
+						)}
+					</div>
+				))}
+			</div>
 		</div>
 	);
 	/* <>

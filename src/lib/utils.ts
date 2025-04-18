@@ -63,7 +63,7 @@ export const islandConfig = {
 	};
 };
 
-export type islandNames = keyof typeof islandConfig;
+export type IslandNames = keyof typeof islandConfig;
 
 export const perkColors: { [k: string]: string } = {
 	strong: "#fc5454",
@@ -74,9 +74,9 @@ export const perkColors: { [k: string]: string } = {
 };
 
 export type Filter = {
-	[category in "hooks" | "magnets" | "lures"]: {
-		[key: string]: string;
-	};
+	category: string;
+	type: string;
+	amount: string | null;
 };
 
 export type FishingSpot = {
@@ -137,62 +137,69 @@ export function clearMarkers() {
 
 export function filterFishingSpots(
 	spots: FishingSpot[],
-	selectedFilters: Filter
+	selectedFilters: Filter[],
+	enforce: boolean
 ): FishingSpot[] {
-	return spots.filter((spot) => matchesFilter(spot, selectedFilters));
+	if (selectedFilters.length === 0) return spots;
+
+	return spots.filter((spot) =>
+		matchesFilter(spot, selectedFilters, enforce)
+	);
 }
 
-function matchesFilter(spot: FishingSpot, selectedFilters: Filter): boolean {
-	const checkPerks = (
-		perkType: keyof FishingSpot["perks"],
-		perk: Record<string, string | undefined> | undefined,
-		filter: Record<string, string>
-	): boolean => {
-		if (!perk) return false; // If perk is undefined, we assume it matches (i.e., no filtering needed)
+function matchesFilter(
+	spot: FishingSpot,
+	selectedFilters: Filter[],
+	enforce: boolean
+): boolean {
+	if (enforce) {
+		return selectedFilters.every((filter) => {
+			const { category, type, amount } = filter;
 
-		let matches = false;
+			const categoryPerk = (spot.perks as any)[category];
+			if (!categoryPerk) return false;
 
-		Object.keys(filter).forEach((key) => {
-			const filterValue = filter[key];
-			const spotValue = perk[key];
+			const perkValue = categoryPerk[type];
+			if (!perkValue) return false;
 
-			if (filterValue === "off") {
-				// If the filter is "off", we ignore this specific perk in the spot
-				return;
-			}
-
-			if (filterValue === "0") {
-				// If filter is "0", we include any value.
-				if (spotValue !== undefined) {
-					matches = true; // We only match if there's a value in the spot
-				}
-				return;
-			}
-
-			if (spotValue !== undefined) {
-				if (perkType === "lures") {
-					matches = true;
-					return;
-				}
-				// Compare numeric values if the spot value is not undefined
-				const filterInt = parseInt(filterValue);
-				const spotInt = parseInt(spotValue);
-				if (spotInt >= filterInt) {
-					matches = true;
-				}
-			}
+			return amount === null || perkValue >= amount;
 		});
+	}
+	for (const filter of selectedFilters) {
+		const { category, type, amount } = filter;
 
-		// If no match has been found, return false
-		return matches;
+		// Access the specific perks category (hooks, magnets, or lures)
+		const categoryPerk = (spot.perks as any)[category];
+
+		// Skip if the category doesn't exist
+		if (!categoryPerk) continue;
+
+		// Access the specific perk type
+		const perkValue = categoryPerk[type];
+
+		// If the perk exists and either no amount is required or amount matches
+		if (perkValue && (amount === null || perkValue >= amount)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+export const capitalize = (word: string) =>
+	word.charAt(0).toUpperCase() + word.slice(1);
+
+export function renamePerks(type: string, category: string) {
+	// Lures mapping
+	const lureMappings: { [key: string]: string } = {
+		strong: "Elusive Fish Chance",
+		wise: "Wayfinder Data",
+		glimmering: "Pearl Chance",
+		greedy: "Treasure Chance",
+		lucky: "Spirit Chance",
 	};
 
-	// Check hooks, magnets, and lures using the checkPerks function
-	return (
-		checkPerks("hooks", spot.perks.hooks, selectedFilters.hooks) ||
-		checkPerks("magnets", spot.perks.magnets, selectedFilters.magnets) ||
-		checkPerks("lures", spot.perks.lures, selectedFilters.lures)
-	);
+	if (category === "lures") return lureMappings[type];
+	else return `${capitalize(type)} ${capitalize(category).replace(/s+$/, '')} `;
 }
 
 export function formatPerks(fishingSpot: FishingSpot) {

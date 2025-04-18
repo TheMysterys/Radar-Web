@@ -9,7 +9,7 @@ import {
 	FishingSpot,
 	formatPerks,
 	islandConfig,
-	islandNames,
+	IslandNames,
 	perkColors,
 } from "@/lib/utils";
 import { Feature } from "ol";
@@ -20,24 +20,9 @@ import Style from "ol/style/Style";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-	const [island, setIsland] = useState<islandNames>("temperate_1");
-	const [selectedFilters, setSelectedFilters] = useState<Filter>({
-		hooks: {
-			strong: "0",
-			wise: "0",
-			glimmering: "0",
-			greedy: "0",
-			lucky: "0",
-		},
-		magnets: { xp: "0", fish: "0", pearl: "0", treasure: "0", spirit: "0" },
-		lures: {
-			strong: "0",
-			wise: "0",
-			glimmering: "0",
-			greedy: "0",
-			lucky: "0",
-		},
-	});
+	const [island, setIsland] = useState<IslandNames>("temperate_1");
+	const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
+	const [enforce, setEnforce] = useState(false);
 	const [spots, setSpots] = useState<{ [k: string]: FishingSpot[] }>({
 		temperate_1: [],
 		temperate_2: [],
@@ -52,7 +37,7 @@ export default function Home() {
 
 	const [filteredSpots, setFilteredSpots] = useState<FishingSpot[]>([]);
 
-	function addSpot(data: { island: islandNames; spot: FishingSpot }) {
+	function addSpot(data: { island: IslandNames; spot: FishingSpot }) {
 		if (spots[data.island]) {
 			setSpots((prevSpots) => ({
 				...prevSpots,
@@ -101,7 +86,8 @@ export default function Home() {
 	useEffect(() => {
 		const newFilteredSpots = filterFishingSpots(
 			spots[island],
-			selectedFilters
+			selectedFilters,
+			enforce
 		);
 		clearMarkers();
 		if (newFilteredSpots.length > 0) {
@@ -138,7 +124,7 @@ export default function Home() {
 			});
 		}
 		setFilteredSpots(newFilteredSpots);
-	}, [selectedFilters, spots, island]);
+	}, [selectedFilters, spots, island, enforce]);
 
 	return (
 		<main className="h-dvh flex flex-col">
@@ -160,11 +146,13 @@ export default function Home() {
 			</div>
 			<dialog
 				id="filterMenu"
-				className="bg-black p-3 text-white rounded-lg backdrop:bg-gray-700 backdrop:bg-opacity-70 space-y-2"
+				className="bg-black p-3 text-white rounded-lg backdrop:bg-gray-700 backdrop:bg-opacity-70 space-y-2 w-1/2"
 			>
 				<FilterMenu
 					selectedFilters={selectedFilters}
 					setSelectedFilters={setSelectedFilters}
+					enforce={enforce}
+					setEnforce={setEnforce}
 				/>
 				<button
 					className="bg-slate-800 p-1 rounded-lg border-2 border-slate-700 hover:bg-slate-700"
@@ -191,7 +179,7 @@ export default function Home() {
 						className="w-full rounded-lg bg-slate-800 p-2"
 						value={island}
 						onChange={(e) =>
-							setIsland(e.target.value as islandNames)
+							setIsland(e.target.value as IslandNames)
 						}
 					>
 						<option value="temperate_1">Verdant Woods</option>
