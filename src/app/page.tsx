@@ -155,7 +155,7 @@ export default function Home() {
 					setEnforce={setEnforce}
 				/>
 				<button
-					className="bg-slate-800 p-1 rounded-lg border-2 border-slate-700 hover:bg-slate-700"
+					className="rounded-lg border-2 border-slate-700 bg-slate-800 p-1 transition-colors duration-700 hover:bg-slate-700"
 					onClick={() => {
 						const modal = document.getElementById(
 							"filterMenu"
@@ -199,7 +199,7 @@ export default function Home() {
 						</h2>
 						<div>
 							<button
-								className="bg-slate-800 p-2 rounded-lg border-2 border-slate-700 hover:bg-slate-700"
+								className="rounded-lg border-2 border-slate-700 bg-slate-800 p-2 transition-colors duration-700 hover:bg-slate-700"
 								onClick={() => {
 									const modal = document.getElementById(
 										"filterMenu"
