@@ -102,7 +102,7 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 					info!.innerHTML = [
 						`<p>Cords: ${spot.cords}</p>`,
 						`<p>Perks: ${formatPerks(spot)}</p>`,
-						`<p>Found By: ${spot.foundBy}</p>`,
+						`<p>Found By: ${spot.foundBy ?? "Hidden"}</p>`,
 					].join("\n");
 					info!.style.borderColor = perkColors[spot.color];
 				}
