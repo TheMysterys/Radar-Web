@@ -42,7 +42,7 @@ export default function FilterMenu({
 		<div className="*:select-none h-96">
 			<h1 className="text-2xl font-semibold">Filter Menu</h1>
 
-			<div className="flex items-center text-lg *:transition-colors *:duration-700">
+			<div className="flex gap-2 flex-row md:items-center text-lg *:transition-colors *:duration-700">
 				<select
 					className="rounded-lg bg-slate-800 p-2"
 					value={selected}
@@ -55,7 +55,7 @@ export default function FilterMenu({
 					))}
 				</select>
 				<select
-					className="rounded-lg bg-slate-800 p-2 mx-1"
+					className="rounded-lg bg-slate-800 p-2"
 					value={selectedValue}
 					onChange={(e) => setSelectedValue(e.target.value)}
 				>
@@ -64,7 +64,7 @@ export default function FilterMenu({
 					<option value={30}>+30%</option>
 				</select>
 				<button
-					className="rounded-lg bg-slate-800 p-2 mx-1 hover:bg-slate-700"
+					className="rounded-lg bg-slate-800 p-2 hover:bg-slate-700"
 					onClick={() => {
 						const [type, category] = selected.split("_");
 						if (
@@ -107,8 +107,10 @@ export default function FilterMenu({
 				>
 					Add
 				</button>
+			</div>
+			<div className="flex gap-1 mt-1">
 				<div
-					className="rounded-lg bg-slate-800 p-2 hover:bg-slate-700"
+					className="rounded-lg bg-slate-800 p-2 hover:bg-slate-700 space-x-2 max-w-fit"
 					onClick={() => setEnforce(!enforce)}
 				>
 					<input
@@ -120,12 +122,13 @@ export default function FilterMenu({
 					<span>Match All</span>
 				</div>
 				<button
-					className="rounded-lg bg-slate-800 p-2 ml-2 hover:bg-red-500"
+					className="rounded-lg bg-slate-800 p-2 hover:bg-red-500"
 					onClick={() => setSelectedFilters([])}
 				>
 					Clear
 				</button>
 			</div>
+			<hr className="my-2 border-neutral-700" />
 			<div className="flex flex-wrap gap-2 mt-4">
 				{selectedFilters.map((filter, index) => (
 					<div key={index} className="flex bg-neutral-800 rounded-lg">

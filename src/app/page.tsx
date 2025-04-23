@@ -213,7 +213,7 @@ export default function Home() {
 			</div>
 			<dialog
 				id="filterMenu"
-				className="bg-black p-3 text-white rounded-lg backdrop:bg-gray-700 backdrop:bg-opacity-70 space-y-2 w-1/2"
+				className="mb-0 h-[85%] max-h-full w-full max-w-full space-y-2 rounded-lg bg-black p-3 text-white backdrop:bg-gray-700 backdrop:bg-opacity-70 md:w-1/2 md:m-auto"
 			>
 				<FilterMenu
 					selectedFilters={selectedFilters}
@@ -222,7 +222,7 @@ export default function Home() {
 					setEnforce={setEnforce}
 				/>
 				<button
-					className="rounded-lg border-2 border-slate-700 bg-slate-800 p-1 transition-colors duration-700 hover:bg-slate-700"
+					className="absolute bottom-4 rounded-lg border-2 border-slate-700 bg-slate-800 p-1 transition-colors duration-700 hover:bg-slate-700"
 					onClick={() => {
 						const modal = document.getElementById(
 							"filterMenu"
