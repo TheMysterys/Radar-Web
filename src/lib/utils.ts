@@ -2,6 +2,7 @@ import { Feature } from "ol";
 import { Circle } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
+import Icon from "ol/style/Icon";
 
 export const islandConfig = {
 	temperate_1: {
@@ -108,6 +109,11 @@ export type FishingSpot = {
 	};
 };
 
+export type PerkDisplay = {
+	icon: string;
+	text: string;
+}
+
 const markers: Feature<Circle>[] = [];
 
 export const markerLayer = new VectorLayer({
@@ -204,7 +210,7 @@ export function renamePerks(type: string, category: string) {
 
 export function formatPerks(fishingSpot: FishingSpot) {
 	const perks = fishingSpot.perks;
-	let perkStrings: string[] = [];
+	let perkDisplays: PerkDisplay[] = [];
 
 	// Lures mapping
 	const lureMappings: { [key: string]: string } = {
@@ -214,6 +220,30 @@ export function formatPerks(fishingSpot: FishingSpot) {
 		greedy: "Treasure Chance",
 		lucky: "Spirit Chance",
 	};
+
+	const iconMappings: { [key: string]: {[key: string]: string} }  = {
+		hooks: {
+			strong: "icons/hook_strong.png",
+			wise: "icons/hook_wise.png",
+			glimmering: "icons/hook_glimmering.png",
+			greedy: "icons/hook_greedy.png",
+			lucky: "icons/hook_lucky.png"
+		},
+		magnets: {
+			xp: "icons/magnet_xp.png",
+			fish: "icons/magnet_fish.png",
+			pearl: "icons/magnet_pearl.png",
+			treasure: "icons/magnet_treasure.png",
+			spirit: "icons/magnet_spirit.png"
+		},
+		lures: {
+			strong: "icons/lure_strong.png",
+			wise: "icons/lure_wise.png",
+			glimmering: "icons/lure_glimmering.png",
+			greedy: "icons/lure_greedy.png",
+			lucky: "icons/lure_lucky.png"
+		}
+	}
 
 	// Iterate over all perk categories (hooks, magnets, lures)
 	for (const category in perks) {
@@ -240,21 +270,26 @@ export function formatPerks(fishingSpot: FishingSpot) {
 					// Format the perk string
 					if (category === "lures") {
 						if (perkType == "wise") {
-							perkStrings.push(`+${amount} ${formattedPerkType}`);
+							perkDisplays.push({
+								icon: iconMappings[category]?.[perkType] ?? "",
+								text: `+${amount} ${formattedPerkType}`
+							})	
 						} else {
-							perkStrings.push(
-								`+${amount}% ${formattedPerkType}`
-							);
+							perkDisplays.push({
+								icon: iconMappings[category]?.[perkType] ?? "",
+								text: `+${amount}% ${formattedPerkType}`
+							})
 						}
 					} else {
-						perkStrings.push(
-							`+${amount}% ${formattedPerkType} ${formattedCategory}`
-						);
+						perkDisplays.push({
+							icon: iconMappings[category]?.[perkType] ?? "",
+							text: `+${amount}% ${formattedPerkType} ${formattedCategory}`
+						})
 					}
 				}
 			}
 		}
 	}
 
-	return perkStrings.join(", ");
+	return perkDisplays;
 }

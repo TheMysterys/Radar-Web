@@ -240,7 +240,7 @@ export default function Home() {
 				<MapComponent island={island} />
 				<div
 					id="list"
-					className="mt-4 flex w-full flex-col px-4 text-xl md:mt-0 md:w-96"
+					className="mt-4 flex w-full flex-col px-4 text-xl md:mt-0 md:w-auto"
 				>
 					<select
 						className="w-full rounded-lg bg-slate-800 p-2"
@@ -287,11 +287,39 @@ export default function Home() {
 							return (
 								<div
 									key={i}
-									className="border-2 rounded-lg p-2"
+									className="flex border-2 rounded-lg p-2"
 								>
-									<p>Cords: {spot.cords}</p>
-									<p>Perks: {formatPerks(spot)}</p>
-									<p>Found by: {spot.foundBy ?? "Hidden"}</p>
+									<div
+										style={{
+											width: "auto",
+											marginRight: "20px"
+										}}
+									>
+										<p>{formatPerks(spot).map((perk, j) => {
+										return (
+											<span
+												key={j}
+												className="flex items-center"
+											>
+												<img 
+													src={perk.icon}
+													style={{ height: "1em", width: "auto", display: "inline-block", marginRight: "2px" }}
+												></img>
+												{perk.text}
+											</span>
+										)
+									})}</p>
+									</div>
+									<div
+										style={{textAlign: "right",
+											width: "auto"
+										}}
+										className="flex-grow"
+									>
+										<p>{spot.cords}</p>
+
+										{spot.foundBy !== null && <p>{spot.foundBy}</p>}
+									</div>
 								</div>
 							);
 						})}

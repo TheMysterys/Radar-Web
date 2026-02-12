@@ -99,9 +99,16 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 				if (feature !== currentFeature) {
 					info!.style.visibility = "visible";
 					const spot: FishingSpot = feature.get("fishingSpot");
+					let perksHtml: string = '';
+					formatPerks(spot).map((spot, i) => {
+						perksHtml = perksHtml 
+						+ `<img src="${spot.icon}" class="items-center" style="display: inline-block; margin-right: 2px">` 
+						+ spot.text 
+						+ "</br>"
+					})
 					info!.innerHTML = [
 						`<p>Cords: ${spot.cords}</p>`,
-						`<p>Perks: ${formatPerks(spot)}</p>`,
+						`<p>${perksHtml}</p>`,
 						`<p>Found By: ${spot.foundBy ?? "Hidden"}</p>`,
 					].join("\n");
 					info!.style.borderColor = perkColors[spot.color];
