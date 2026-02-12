@@ -84,6 +84,7 @@ export type FishingSpot = {
 	cords: string;
 	foundBy: string | null;
 	color: string;
+	marker: Feature<Circle>;
 	perks: {
 		hooks?: {
 			strong?: string;
@@ -139,6 +140,21 @@ export function clearMarkers() {
 			features: markers,
 		})
 	);
+}
+
+export function highlightMarker(marker: Feature<Circle>){
+	const flatCoords = marker.getGeometry()?.getFlatCoordinates() ?? [0, 0]
+	marker.setGeometry(
+		new Circle([flatCoords[0], flatCoords[1]], 10)
+	)
+	
+}
+
+export function unhighlightMarker(marker: Feature<Circle>){
+	const flatCoords = marker.getGeometry()?.getFlatCoordinates() ?? [0, 0]
+	marker.setGeometry(
+		new Circle([flatCoords[0], flatCoords[1]], 2.5)
+	)
 }
 
 export function filterFishingSpots(

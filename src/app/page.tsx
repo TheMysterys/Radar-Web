@@ -8,13 +8,16 @@ import {
 	filterFishingSpots,
 	FishingSpot,
 	formatPerks,
+	highlightMarker,
 	islandConfig,
 	IslandNames,
 	perkColors,
+	unhighlightMarker,
 } from "@/lib/utils";
 import { Feature } from "ol";
 import { Circle } from "ol/geom";
 import Fill from "ol/style/Fill";
+import ImageStyle from "ol/style/Image";
 import Stroke from "ol/style/Stroke";
 import Style from "ol/style/Style";
 import { useEffect, useState } from "react";
@@ -145,9 +148,11 @@ export default function Home() {
 							color: "white",
 							width: 2,
 						}),
+
 					})
 				);
 
+				spot.marker = marker;
 				addMarker(marker);
 			});
 		}
@@ -287,15 +292,20 @@ export default function Home() {
 							return (
 								<div
 									key={i}
-									className="flex border-2 rounded-lg p-2"
+									className="flex border-2 rounded-lg p-2 spot-display"
+									style={{"--hover-color": perkColors[spot.color]} as React.CSSProperties}
+									onMouseEnter ={() => {
+										highlightMarker(spot.marker);
+									}}
+									onMouseLeave ={() => {
+										unhighlightMarker(spot.marker);
+									}}
+									
 								>
 									<div
-										style={{
-											width: "auto",
-											marginRight: "20px"
-										}}
+										style={{width: "auto", marginRight: "20px" }}
 									>
-										<p>{formatPerks(spot).map((perk, j) => {
+										<div>{formatPerks(spot).map((perk, j) => {
 										return (
 											<span
 												key={j}
@@ -308,7 +318,7 @@ export default function Home() {
 												{perk.text}
 											</span>
 										)
-									})}</p>
+									})}</div>
 									</div>
 									<div
 										style={{textAlign: "right",
