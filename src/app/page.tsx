@@ -266,12 +266,15 @@ export default function Home() {
 			</dialog>
 			<div
 				id="content"
-				className="flex-1 flex flex-col md:flex-row md:overflow-hidden"
+				className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0"
 			>
 				<MapComponent island={island} />
 				<div
 					id="list"
-					className="mt-4 flex w-full flex-col px-4 text-xl md:mt-0 md:w-auto"
+					className="mt-4 flex w-full flex-col px-4 text-xl 
+						h-[50vh] md:h-auto 
+						md:mt-0 md:w-auto
+						shrink-0 min-h-0"
 				>
 					<div className="flex justify-between">
 						<h2 className="mr-4 mt-2 text-2xl font-semibold">
@@ -294,7 +297,7 @@ export default function Home() {
 					<p>Total Spots on Island: {spots[island].length}</p>
 					<div
 						id="spots"
-						className="flex-1 overflow-y-auto mt-4 space-y-2 pr-3 -mr-3"
+						className="flex-1 overflow-y-auto mt-4 space-y-2 pr-3 -mr-3 min-h-0"
 					>
 						{filteredSpots.map((spot, i) => {
 							return (
