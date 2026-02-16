@@ -27,6 +27,47 @@ body {
 	background-color: var(--hover-color);
 }
 
+.islands-div{
+	display: flex;
+	overflow: visible;
+	min-width: 0;
+}
+
+.island-button{
+	width: 30px;
+	height: 30px;
+	background-position: center;
+	background-size: 80%;
+	background-repeat: no-repeat;
+	image-rendering: pixelated;
+	margin: 2px 5px 2px 5px;
+	border-radius: 5px;
+	transition: 0.3s;
+	opacity: 75%;
+}
+
+.island-button:hover, .island-button:focus, .island-button-selected{
+	background-color: var(--island-color);
+	opacity: 100%;
+	transform: scale(120%);
+	cursor: pointer;
+}
+
+.hidable-if-not-enough-space{
+	transition: 0.3s;
+}
+
+@media (max-width: 700px) {
+    .hidable-if-not-enough-space{
+       display: none;
+    }
+	.islands-div{
+		width: 100%;
+		align-content: center;
+		justify-content: center;
+	}
+}
+
 #info {
 	position: absolute;
 	display: flex;

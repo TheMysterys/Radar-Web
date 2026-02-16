@@ -74,6 +74,31 @@ export const perkColors: { [k: string]: string } = {
 	lucky: "#23c525",
 };
 
+export const islandColors: { [key: string]: string } = {
+	temperate_1: "#54f252",
+	temperate_2: "#54f252",
+	temperate_3: "#54f252",
+	tropical_1: "#f774a5",
+	tropical_2: "#f774a5",
+	tropical_3: "#f774a5",
+	barren_1: "#fd8d41",
+	barren_2: "#fd8d41",
+	barren_3: "#fd8d41",
+
+}
+
+export const islandNamesMapping: { [key: string]: string } = {
+	temperate_1: "Verdant Woods",
+	temperate_2: "Floral Forest",
+	temperate_3: "Dark Grove",
+	tropical_1: "Tropical Overgrowth",
+	tropical_2: "Coral Shores",
+	tropical_3: "Twisted Swamp",
+	barren_1: "Ancient Sands",
+	barren_2: "Blazing Canyon",
+	barren_3: "Ashen Wastes",
+}
+
 export type Filter = {
 	category: string;
 	type: string;
