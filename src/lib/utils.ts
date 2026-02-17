@@ -1,4 +1,5 @@
 import { Feature } from "ol";
+import { ColorType } from "ol/expr/expression";
 import { Circle } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -85,6 +86,18 @@ export const islandColors: { [key: string]: string } = {
 	barren_2: "#fd8d41",
 	barren_3: "#fd8d41",
 
+}
+
+export const islandBackgroundColors: { [key: string]: string} = {
+	temperate_1: "#082008",
+	temperate_2: "#082008",
+	temperate_3: "#082008",
+	tropical_1: "#1c0a11",
+	tropical_2: "#1c0a11",
+	tropical_3: "#1c0a11",
+	barren_1: "#2b1709",
+	barren_2: "#2b1709",
+	barren_3: "#2b1709",
 }
 
 export const islandNamesMapping: { [key: string]: string } = {

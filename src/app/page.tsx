@@ -9,6 +9,7 @@ import {
 	FishingSpot,
 	formatPerks,
 	highlightMarker,
+	islandBackgroundColors,
 	islandColors,
 	islandConfig,
 	IslandNames,
@@ -181,6 +182,10 @@ export default function Home() {
 		localStorage.setItem("filter", JSON.stringify(selectedFilters));
 		localStorage.setItem("enforce", JSON.stringify(enforce));
 	}, [selectedFilters, enforce]);
+
+	useEffect(() => {
+		document.body.style.setProperty('--background', islandBackgroundColors[island]);
+	}, [island])
 
 	return (
 		<main className="h-dvh flex flex-col">
