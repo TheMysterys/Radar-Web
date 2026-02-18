@@ -283,7 +283,7 @@ export default function Home() {
 				>
 					<div className="flex justify-between">
 						<h2 className="mr-4 mt-2 text-2xl font-semibold">
-							{islandNamesMapping[island]}
+							{islandNamesMapping[island]} <span style={{color: "#808080", fontWeight: "normal"}}>({spots[island].length})</span> 
 						</h2>
 						<div>
 							<button
@@ -299,7 +299,6 @@ export default function Home() {
 							</button>
 						</div>
 					</div>
-					<p>Total Spots on Island: {spots[island].length}</p>
 					<div
 						id="spots"
 						className="flex-1 overflow-y-auto mt-4 space-y-2 pr-3 -mr-3 min-h-0"
