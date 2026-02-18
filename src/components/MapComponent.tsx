@@ -27,7 +27,7 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 			layers: [
 				new ImageLayer({
 					source: new Static({
-						url: `/images/${island}.png`,
+						url: `images/${island}.png`,
 						imageExtent: extent,
 						interpolate: false,
 					}),

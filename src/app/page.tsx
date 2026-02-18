@@ -228,7 +228,7 @@ export default function Home() {
 							<input type="button"
 								className={classes}
 								style={{
-									backgroundImage: `url(/islands/${type}.png)`,
+									backgroundImage: `url(islands/${type}.png)`,
 									"--island-color": islandColors[type],
 								} as React.CSSProperties}
 								onClick={(e) => {
