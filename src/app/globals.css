@@ -31,6 +31,10 @@ body {
 	border: #ffffff40 2px solid;
 }
 
+.ol-viewport {
+  background-color: #2629b8;
+}
+
 .spot-display:hover{
 	background-color: var(--hover-color);
 	border: #ffffff 2px solid;
