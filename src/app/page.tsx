@@ -307,13 +307,15 @@ export default function Home() {
 							return (
 								<div
 									key={i}
-									className="flex border-2 rounded-lg p-2 spot-display"
+									className="flex rounded-lg p-2 spot-display"
 									style={{"--hover-color": perkColors[spot.color]} as React.CSSProperties}
 									onMouseEnter ={() => {
-										highlightMarker(spot.marker);
+										highlightMarker(spot);
 									}}
-									onMouseLeave ={() => {
-										unhighlightMarker(spot.marker);
+									onMouseLeave ={(event) => {
+										if (!(event.currentTarget == document.activeElement)){
+											unhighlightMarker(spot);
+										}
 									}}
 									
 								>

@@ -3,7 +3,10 @@ import { ColorType } from "ol/expr/expression";
 import { Circle } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
+import Fill from "ol/style/Fill";
 import Icon from "ol/style/Icon";
+import Stroke from "ol/style/Stroke";
+import Style from "ol/style/Style";
 
 export const islandConfig = {
 	temperate_1: {
@@ -180,18 +183,42 @@ export function clearMarkers() {
 	);
 }
 
-export function highlightMarker(marker: Feature<Circle>){
+export function highlightMarker(spot: FishingSpot){
+	let marker = spot.marker
 	const flatCoords = marker.getGeometry()?.getFlatCoordinates() ?? [0, 0]
 	marker.setGeometry(
 		new Circle([flatCoords[0], flatCoords[1]], 10)
 	)
+	marker.setStyle(
+		new Style({
+			fill: new Fill({
+				color: perkColors[spot.color],
+			}),
+			stroke: new Stroke({
+				color: "white",
+				width: 5,
+			}),
+		})
+	)
 	
 }
 
-export function unhighlightMarker(marker: Feature<Circle>){
+export function unhighlightMarker(spot: FishingSpot){
+	let marker = spot.marker
 	const flatCoords = marker.getGeometry()?.getFlatCoordinates() ?? [0, 0]
 	marker.setGeometry(
 		new Circle([flatCoords[0], flatCoords[1]], 2.5)
+	)
+	marker.setStyle(
+		new Style({
+			fill: new Fill({
+				color: perkColors[spot.color],
+			}),
+			stroke: new Stroke({
+				color: "white",
+				width: 2,
+			}),
+		})
 	)
 }
 
