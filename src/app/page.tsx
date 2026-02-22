@@ -313,9 +313,7 @@ export default function Home() {
 										highlightMarker(spot);
 									}}
 									onMouseLeave ={(event) => {
-										if (!(event.currentTarget == document.activeElement)){
-											unhighlightMarker(spot);
-										}
+										unhighlightMarker(spot);
 									}}
 									
 								>
