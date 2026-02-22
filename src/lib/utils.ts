@@ -198,6 +198,7 @@ export function highlightMarker(spot: FishingSpot){
 				color: "white",
 				width: 5,
 			}),
+			zIndex: 1
 		})
 	)
 	
