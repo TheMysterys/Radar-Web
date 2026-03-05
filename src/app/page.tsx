@@ -226,7 +226,7 @@ export default function Home() {
 							<input type="button"
 								className={classes}
 								style={{
-									backgroundImage: `url(islands/${type}.png)`,
+									backgroundImage: `url(https://islandcdn.themysterys.com/fishing/islands/${islandConfig[type].name.toLowerCase().replaceAll(" ","_")}.png)`,
 									"--island-color": islandColors[type.split("_")[0]],
 								} as React.CSSProperties}
 								onClick={(e) => {
