@@ -13,58 +13,68 @@ export const islandConfig = {
 		x: { min: -512, max: -1 },
 		y: { min: 511, max: 0 },
 		size: [0, 0, 512, 512],
+		name: "Verdant Woods"
 	},
 	temperate_2: {
 		x: { min: 1536, max: 2047 },
 		y: { min: 1023, max: 512 },
 		size: [0, 0, 512, 512],
+		name: "Floral Forest"
 	},
 	temperate_3: {
 		x: { min: 1536, max: 2047 },
 		y: { min: 2047, max: 1536 },
 		size: [0, 0, 512, 512],
+		name: "Dark Grove"
 	},
 
 	tropical_1: {
 		x: { min: 512, max: 1023 },
 		y: { min: 2047, max: 1427 },
 		size: [0, 0, 512, 621],
+		name: "Tropical Overgrowth"
 	},
 
 	tropical_2: {
 		x: { min: -512, max: -1 },
 		y: { min: 2047, max: 1536 },
 		size: [0, 0, 512, 512],
+		name: "Coral Shores"
 	},
 
 	tropical_3: {
 		x: { min: 1536, max: 2047 },
 		y: { min: -1, max: -512 },
 		size: [0, 0, 512, 512],
+		name: "Twisted Swamp"
 	},
 
 	barren_1: {
 		x: { min: 2560, max: 3126 },
 		y: { min: -1, max: -569 },
 		size: [0, 0, 567, 569],
+		name: "Ancient Sands"
 	},
 
 	barren_2: {
 		x: { min: 2560, max: 3071 },
 		y: { min: 1535, max: 1024 },
 		size: [0, 0, 512, 512],
+		name: "Blazing Canyon"
 	},
 
 	barren_3: {
 		x: { min: 1024, max: 1535 },
 		y: { min: 3071, max: 2560 },
 		size: [0, 0, 512, 512],
+		name: "Ashen Wastes"
 	},
 } as const satisfies {
 	[k: string]: {
 		x: { min: number; max: number };
 		y: { min: number; max: number };
 		size: number[];
+		name: string
 	};
 };
 
@@ -79,40 +89,12 @@ export const perkColors: { [k: string]: string } = {
 };
 
 export const islandColors: { [key: string]: string } = {
-	temperate_1: "#54f252",
-	temperate_2: "#54f252",
-	temperate_3: "#54f252",
-	tropical_1: "#f774a5",
-	tropical_2: "#f774a5",
-	tropical_3: "#f774a5",
-	barren_1: "#fd8d41",
-	barren_2: "#fd8d41",
-	barren_3: "#fd8d41",
-
-}
-
-export const islandBackgroundColors: { [key: string]: string} = {
-	temperate_1: "#082008",
-	temperate_2: "#082008",
-	temperate_3: "#082008",
-	tropical_1: "#2b0f1a",
-	tropical_2: "#2b0f1a",
-	tropical_3: "#2b0f1a",
-	barren_1: "#2b1709",
-	barren_2: "#2b1709",
-	barren_3: "#2b1709",
-}
-
-export const islandNamesMapping: { [key: string]: string } = {
-	temperate_1: "Verdant Woods",
-	temperate_2: "Floral Forest",
-	temperate_3: "Dark Grove",
-	tropical_1: "Tropical Overgrowth",
-	tropical_2: "Coral Shores",
-	tropical_3: "Twisted Swamp",
-	barren_1: "Ancient Sands",
-	barren_2: "Blazing Canyon",
-	barren_3: "Ashen Wastes",
+	temperate: "#54f252",
+	temperateB: "#082008",
+	tropical: "#f774a5",
+	tropicalB: "#2b0f1a",
+	barren: "#fd8d41",
+	barrenB: "#2b1709",
 }
 
 export type Filter = {
@@ -305,25 +287,25 @@ export function formatPerks(fishingSpot: FishingSpot) {
 
 	const iconMappings: { [key: string]: {[key: string]: string} }  = {
 		hooks: {
-			strong: "icons/hook_strong.png",
-			wise: "icons/hook_wise.png",
-			glimmering: "icons/hook_glimmering.png",
-			greedy: "icons/hook_greedy.png",
-			lucky: "icons/hook_lucky.png"
+			strong: "hooks/strong.png",
+			wise: "hooks/wise.png",
+			glimmering: "hooks/glimmering.png",
+			greedy: "hooks/greedy.png",
+			lucky: "hooks/lucky.png"
 		},
 		magnets: {
-			xp: "icons/magnet_xp.png",
-			fish: "icons/magnet_fish.png",
-			pearl: "icons/magnet_pearl.png",
-			treasure: "icons/magnet_treasure.png",
-			spirit: "icons/magnet_spirit.png"
+			xp: "magnets/xp.png",
+			fish: "magnets/fish.png",
+			pearl: "magnets/pearl.png",
+			treasure: "magnets/treasure.png",
+			spirit: "magnets/spirit.png"
 		},
 		lures: {
-			strong: "icons/lure_strong.png",
-			wise: "icons/lure_wise.png",
-			glimmering: "icons/lure_glimmering.png",
-			greedy: "icons/lure_greedy.png",
-			lucky: "icons/lure_lucky.png"
+			strong: "lures/strong.png",
+			wise: "lures/wise.png",
+			glimmering: "lures/glimmering.png",
+			greedy: "lures/greedy.png",
+			lucky: "lures/lucky.png"
 		}
 	}
 

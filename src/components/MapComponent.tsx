@@ -102,7 +102,7 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 					let perksHtml: string = '';
 					formatPerks(spot).map((spot, i) => {
 						perksHtml = perksHtml 
-						+ `<img src="${spot.icon}" class="items-center" style="display: inline-block; margin-right: 2px">` 
+						+ `<img src="https://islandcdn.themysterys.com/fishing/perks/${spot.icon}" class="items-center" style="display: inline-block; margin-right: 2px">` 
 						+ spot.text 
 						+ "</br>"
 					})

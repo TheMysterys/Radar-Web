@@ -9,11 +9,9 @@ import {
 	FishingSpot,
 	formatPerks,
 	highlightMarker,
-	islandBackgroundColors,
 	islandColors,
 	islandConfig,
 	IslandNames,
-	islandNamesMapping,
 	perkColors,
 	unhighlightMarker,
 } from "@/lib/utils";
@@ -184,7 +182,7 @@ export default function Home() {
 	}, [selectedFilters, enforce]);
 
 	useEffect(() => {
-		document.body.style.setProperty('--background', islandBackgroundColors[island]);
+		document.body.style.setProperty('--background', islandColors[island]+"B");
 	}, [island])
 
 	return (
@@ -283,7 +281,7 @@ export default function Home() {
 				>
 					<div className="flex justify-between">
 						<h2 className="mr-4 mt-2 text-2xl font-semibold">
-							{islandNamesMapping[island]} <span style={{color: "#808080", fontWeight: "normal"}}>({spots[island].length})</span> 
+							{islandConfig[island].name} <span style={{color: "#808080", fontWeight: "normal"}}>({spots[island].length})</span> 
 						</h2>
 						<div>
 							<button
