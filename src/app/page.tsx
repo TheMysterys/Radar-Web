@@ -182,7 +182,7 @@ export default function Home() {
 	}, [selectedFilters, enforce]);
 
 	useEffect(() => {
-		document.body.style.setProperty('--background', islandColors[island]+"B");
+		document.body.style.setProperty('--background', islandColors[island.split("_")[0]+"B"]);
 	}, [island])
 
 	return (
@@ -227,7 +227,7 @@ export default function Home() {
 								className={classes}
 								style={{
 									backgroundImage: `url(islands/${type}.png)`,
-									"--island-color": islandColors[type],
+									"--island-color": islandColors[type.split("_")[0]],
 								} as React.CSSProperties}
 								onClick={(e) => {
 									setIsland(type as IslandNames)
@@ -325,7 +325,7 @@ export default function Home() {
 												className="flex items-center"
 											>
 												<img 
-													src={perk.icon}
+													src={`https://islandcdn.themysterys.com/fishing/perks/${perk.icon}`}
 													style={{ height: "1em", width: "auto", display: "inline-block", marginRight: "2px"}}
 												></img>
 												{perk.text}
