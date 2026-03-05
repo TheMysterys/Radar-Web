@@ -143,7 +143,7 @@ export default function FilterMenu({
 							X
 						</button>
 						<img
-							src={`https://cdn.islandstats.xyz/fishing/perks/${filter.category}/${filter.type}.png`}
+							src={`https://islandcdn.themysterys.com/fishing/perks/${filter.category}/${filter.type}.png`}
 							className="w-6 h-6 self-center mr-1"
 						/>
 						<span className="py-1 mr-1 flex-grow">

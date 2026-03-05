@@ -8,13 +8,18 @@ import {
 	filterFishingSpots,
 	FishingSpot,
 	formatPerks,
+	highlightMarker,
+	islandColors,
 	islandConfig,
 	IslandNames,
 	perkColors,
+	unhighlightMarker,
 } from "@/lib/utils";
 import { Feature } from "ol";
 import { Circle } from "ol/geom";
 import Fill from "ol/style/Fill";
+import Icon from "ol/style/Icon";
+import ImageStyle from "ol/style/Image";
 import Stroke from "ol/style/Stroke";
 import Style from "ol/style/Style";
 import { useEffect, useState } from "react";
@@ -148,6 +153,7 @@ export default function Home() {
 					})
 				);
 
+				spot.marker = marker;
 				addMarker(marker);
 			});
 		}
@@ -175,6 +181,10 @@ export default function Home() {
 		localStorage.setItem("enforce", JSON.stringify(enforce));
 	}, [selectedFilters, enforce]);
 
+	useEffect(() => {
+		document.body.style.setProperty('--background', islandColors[island.split("_")[0]+"B"]);
+	}, [island])
+
 	return (
 		<main className="h-dvh flex flex-col">
 			{connectionStatus === "connecting" && (
@@ -199,14 +209,38 @@ export default function Home() {
 				id="nav"
 				className="my-2 mx-4 flex space-x-2 text-xl font-semibold items-center justify-between"
 			>
-				<div className="flex gap-2">
+				<div className="flex gap-2 hidable-if-not-enough-space">
 					<img src="/icon.png" className="w-7 h-7 " />
 					<h1>Radar</h1>
+				</div>
+				<div className="islands-div">
+					{["temperate_1","temperate_2","temperate_3",
+						"tropical_1", "tropical_2", "tropical_3",
+						"barren_1", "barren_2", "barren_3", 
+					].map((type, i) => {
+						let classes = "island-button"
+						if (type == island) {
+							classes = "island-button island-button-selected"
+						}
+						return(
+							<input type="button"
+								className={classes}
+								style={{
+									backgroundImage: `url(islands/${type}.png)`,
+									"--island-color": islandColors[type.split("_")[0]],
+								} as React.CSSProperties}
+								onClick={(e) => {
+									setIsland(type as IslandNames)
+								}}
+								key={type}
+								></input>
+						)
+					})}
 				</div>
 				<a
 					href="https://modrinth.com/project/radar"
 					target="_blank"
-					className="font-normal hover:text-blue-400 transition-colors duration-500"
+					className="font-normal hover:text-blue-400 transition-colors duration-500 hidable-if-not-enough-space"
 				>
 					Contribute
 				</a>
@@ -235,34 +269,19 @@ export default function Home() {
 			</dialog>
 			<div
 				id="content"
-				className="flex-1 flex flex-col md:flex-row md:overflow-hidden"
+				className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0"
 			>
 				<MapComponent island={island} />
 				<div
 					id="list"
-					className="mt-4 flex w-full flex-col px-4 text-xl md:mt-0 md:w-96"
+					className="mt-4 flex w-full flex-col px-4 text-xl 
+						h-[50vh] md:h-auto 
+						md:mt-0 md:w-auto
+						shrink-0 min-h-0"
 				>
-					<select
-						className="w-full rounded-lg bg-slate-800 p-2"
-						value={island}
-						onChange={(e) =>
-							setIsland(e.target.value as IslandNames)
-						}
-					>
-						<option value="temperate_1">Verdant Woods</option>
-						<option value="temperate_2">Floral Forest</option>
-						<option value="temperate_3">Dark Grove</option>
-						<option value="tropical_1">Tropical Overgrowth</option>
-						<option value="tropical_2">Coral Shores</option>
-						<option value="tropical_3">Twisted Swamp</option>
-						<option value="barren_1">Ancient Sands</option>
-						<option value="barren_2">Blazing Canyon</option>
-						<option value="barren_3">Ashen Wastes</option>
-					</select>
-					<hr className="-mx-4 my-2 border-gray-600 p-0" />
 					<div className="flex justify-between">
 						<h2 className="mr-4 mt-2 text-2xl font-semibold">
-							Spots
+							{islandConfig[island].name} <span style={{color: "#808080", fontWeight: "normal"}}>({spots[island].length})</span> 
 						</h2>
 						<div>
 							<button
@@ -278,20 +297,52 @@ export default function Home() {
 							</button>
 						</div>
 					</div>
-					<p>Total Spots on Island: {spots[island].length}</p>
 					<div
 						id="spots"
-						className="flex-1 overflow-y-auto mt-4 space-y-2 pr-3 -mr-3"
+						className="flex-1 overflow-y-auto mt-4 space-y-2 pr-3 -mr-3 min-h-0"
 					>
 						{filteredSpots.map((spot, i) => {
 							return (
 								<div
 									key={i}
-									className="border-2 rounded-lg p-2"
+									className="flex rounded-lg p-2 spot-display"
+									style={{"--hover-color": perkColors[spot.color]} as React.CSSProperties}
+									onMouseEnter ={() => {
+										highlightMarker(spot);
+									}}
+									onMouseLeave ={(event) => {
+										unhighlightMarker(spot);
+									}}
+									
 								>
-									<p>Cords: {spot.cords}</p>
-									<p>Perks: {formatPerks(spot)}</p>
-									<p>Found by: {spot.foundBy ?? "Hidden"}</p>
+									<div
+										style={{width: "auto", marginRight: "20px" }}
+									>
+										<div>{formatPerks(spot).map((perk, j) => {
+										return (
+											<span
+												key={j}
+												className="flex items-center"
+											>
+												<img 
+													src={`https://islandcdn.themysterys.com/fishing/perks/${perk.icon}`}
+													style={{ height: "1em", width: "auto", display: "inline-block", marginRight: "2px"}}
+												></img>
+												{perk.text}
+											</span>
+										)
+									})}</div>
+									</div>
+									<div
+										style={{textAlign: "right",
+											width: "auto"
+										}}
+										className="flex-grow"
+									>
+										<p>{spot.cords}</p>
+
+										{spot.foundBy !== null && <p>{spot.foundBy}</p>}
+									</div>
 								</div>
 							);
 						})}
