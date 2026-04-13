@@ -275,9 +275,9 @@ export default function Home() {
 				<div
 					id="list"
 					className="mt-4 flex w-full flex-col px-4 text-xl 
-						h-[50vh] md:h-auto 
+						max-md:flex-1 md:h-auto 
 						md:mt-0 md:w-auto
-						shrink-0 min-h-0"
+						md:shrink-0 min-h-0"
 				>
 					<div className="flex justify-between">
 						<h2 className="mr-4 mt-2 text-2xl font-semibold">
