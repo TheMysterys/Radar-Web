@@ -13,6 +13,7 @@ import {
 	islandConfig,
 	IslandNames,
 	perkColors,
+	snakeToTitle,
 	unhighlightMarker,
 } from "@/lib/utils";
 import { Feature } from "ol";
@@ -44,10 +45,24 @@ export default function Home() {
 
 	function addSpot(data: { island: IslandNames; spot: FishingSpot }) {
 		if (spots[data.island]) {
-			setSpots((prevSpots) => ({
-				...prevSpots,
-				[data.island]: [...prevSpots[data.island], data.spot],
-			}));
+			setSpots((prevSpots) => {
+				const currentSpots = prevSpots[data.island];
+
+				const exists = currentSpots.some(
+					(spot) => spot.cords === data.spot.cords,
+				);
+
+				const updatedSpots = exists
+					? currentSpots.map((spot) =>
+							spot.cords === data.spot.cords ? data.spot : spot,
+						)
+					: [...currentSpots, data.spot];
+
+				return {
+					...prevSpots,
+					[data.island]: updatedSpots,
+				};
+			});
 		} else {
 			console.warn(`Category "${data.island}" does not exist.`);
 		}
@@ -120,7 +135,7 @@ export default function Home() {
 		const newFilteredSpots = filterFishingSpots(
 			spots[island],
 			selectedFilters,
-			enforce
+			enforce,
 		);
 		clearMarkers();
 		if (newFilteredSpots.length > 0) {
@@ -150,7 +165,7 @@ export default function Home() {
 							color: "white",
 							width: 2,
 						}),
-					})
+					}),
 				);
 
 				spot.marker = marker;
@@ -182,8 +197,11 @@ export default function Home() {
 	}, [selectedFilters, enforce]);
 
 	useEffect(() => {
-		document.body.style.setProperty('--background', islandColors[island.split("_")[0]+"B"]);
-	}, [island])
+		document.body.style.setProperty(
+			"--background",
+			islandColors[island.split("_")[0] + "B"],
+		);
+	}, [island]);
 
 	return (
 		<main className="h-dvh flex flex-col">
@@ -204,7 +222,7 @@ export default function Home() {
 					Failed to connect to server.
 				</div>
 			)}
-			
+
 			<div
 				id="nav"
 				className="my-2 mx-4 flex space-x-2 text-xl font-semibold items-center justify-between"
@@ -214,27 +232,38 @@ export default function Home() {
 					<h1>Radar</h1>
 				</div>
 				<div className="islands-div">
-					{["temperate_1","temperate_2","temperate_3",
-						"tropical_1", "tropical_2", "tropical_3",
-						"barren_1", "barren_2", "barren_3", 
+					{[
+						"temperate_1",
+						"temperate_2",
+						"temperate_3",
+						"tropical_1",
+						"tropical_2",
+						"tropical_3",
+						"barren_1",
+						"barren_2",
+						"barren_3",
 					].map((type, i) => {
-						let classes = "island-button"
+						let classes = "island-button";
 						if (type == island) {
-							classes = "island-button island-button-selected"
+							classes = "island-button island-button-selected";
 						}
-						return(
-							<input type="button"
+						return (
+							<input
+								type="button"
 								className={classes}
-								style={{
-									backgroundImage: `url(https://islandcdn.themysterys.com/fishing/islands/${islandConfig[type as IslandNames].name.toLowerCase().replaceAll(" ","_")}.png)`,
-									"--island-color": islandColors[type.split("_")[0]],
-								} as React.CSSProperties}
+								style={
+									{
+										backgroundImage: `url(https://islandcdn.themysterys.com/fishing/islands/${islandConfig[type as IslandNames].name.toLowerCase().replaceAll(" ", "_")}.png)`,
+										"--island-color":
+											islandColors[type.split("_")[0]],
+									} as React.CSSProperties
+								}
 								onClick={(e) => {
-									setIsland(type as IslandNames)
+									setIsland(type as IslandNames);
 								}}
 								key={type}
-								></input>
-						)
+							></input>
+						);
 					})}
 				</div>
 				<a
@@ -259,7 +288,7 @@ export default function Home() {
 					className="absolute bottom-4 rounded-lg border-2 border-slate-700 bg-slate-800 p-1 transition-colors duration-700 hover:bg-slate-700"
 					onClick={() => {
 						const modal = document.getElementById(
-							"filterMenu"
+							"filterMenu",
 						) as HTMLDialogElement;
 						modal.close();
 					}}
@@ -281,14 +310,22 @@ export default function Home() {
 				>
 					<div className="flex justify-between">
 						<h2 className="mr-4 mt-2 text-2xl font-semibold">
-							{islandConfig[island].name} <span style={{color: "#808080", fontWeight: "normal"}}>({spots[island].length})</span> 
+							{islandConfig[island].name}{" "}
+							<span
+								style={{
+									color: "#808080",
+									fontWeight: "normal",
+								}}
+							>
+								({spots[island].length})
+							</span>
 						</h2>
 						<div>
 							<button
 								className="rounded-lg border-2 border-slate-700 bg-slate-800 p-2 transition-colors duration-700 hover:bg-slate-700"
 								onClick={() => {
 									const modal = document.getElementById(
-										"filterMenu"
+										"filterMenu",
 									) as HTMLDialogElement;
 									modal.showModal();
 								}}
@@ -306,42 +343,64 @@ export default function Home() {
 								<div
 									key={i}
 									className="flex rounded-lg p-2 spot-display"
-									style={{"--hover-color": perkColors[spot.color]} as React.CSSProperties}
-									onMouseEnter ={() => {
+									style={
+										{
+											"--hover-color":
+												perkColors[spot.color],
+										} as React.CSSProperties
+									}
+									onMouseEnter={() => {
 										highlightMarker(spot);
 									}}
-									onMouseLeave ={(event) => {
+									onMouseLeave={(event) => {
 										unhighlightMarker(spot);
 									}}
-									
 								>
 									<div
-										style={{width: "auto", marginRight: "20px" }}
+										style={{
+											width: "auto",
+											marginRight: "20px",
+										}}
 									>
-										<div>{formatPerks(spot).map((perk, j) => {
-										return (
-											<span
-												key={j}
-												className="flex items-center"
-											>
-												<img 
-													src={`https://islandcdn.themysterys.com/fishing/perks/${perk.icon}`}
-													style={{ height: "1em", width: "auto", display: "inline-block", marginRight: "2px"}}
-												></img>
-												{perk.text}
-											</span>
-										)
-									})}</div>
+										<div>
+											{formatPerks(spot).map(
+												(perk, j) => {
+													return (
+														<span
+															key={j}
+															className="flex items-center"
+														>
+															<img
+																src={`https://islandcdn.themysterys.com/fishing/perks/${perk.icon}`}
+																style={{
+																	height: "1em",
+																	width: "auto",
+																	display:
+																		"inline-block",
+																	marginRight:
+																		"2px",
+																}}
+															></img>
+															{perk.text}
+														</span>
+													);
+												},
+											)}
+										</div>
+										<div>Stock: {snakeToTitle(spot.stock)}</div>
 									</div>
 									<div
-										style={{textAlign: "right",
-											width: "auto"
+										style={{
+											textAlign: "right",
+											width: "auto",
 										}}
 										className="flex-grow"
 									>
 										<p>{spot.cords}</p>
 
-										{spot.foundBy !== null && <p>{spot.foundBy}</p>}
+										{spot.foundBy !== null && (
+											<p>{spot.foundBy}</p>
+										)}
 									</div>
 								</div>
 							);

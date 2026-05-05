@@ -108,6 +108,7 @@ export type FishingSpot = {
 	foundBy: string | null;
 	color: string;
 	marker: Feature<Circle>;
+	stock: string,
 	perks: {
 		hooks?: {
 			strong?: string;
@@ -257,6 +258,13 @@ function matchesFilter(
 }
 export const capitalize = (word: string) =>
 	word.charAt(0).toUpperCase() + word.slice(1);
+
+export const snakeToTitle = (str: string) =>
+	str
+		.toLowerCase()
+		.split("_")
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
 
 export function renamePerks(type: string, category: string) {
 	// Lures mapping

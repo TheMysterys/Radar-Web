@@ -12,6 +12,7 @@ import {
 	IslandNames,
 	markerLayer,
 	perkColors,
+	snakeToTitle,
 } from "@/lib/utils";
 import { FeatureLike } from "ol/Feature";
 import { Pixel } from "ol/pixel";
@@ -108,6 +109,7 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 					})
 					info!.innerHTML = [
 						`<p>Cords: ${spot.cords}</p>`,
+						`<p>Stock: ${snakeToTitle(spot.stock)}</p>`,
 						`<p>${perksHtml}</p>`,
 						`<p>Found By: ${spot.foundBy ?? "Hidden"}</p>`,
 					].join("\n");
