@@ -14,6 +14,7 @@ import {
 	IslandNames,
 	perkColors,
 	snakeToTitle,
+	stockColors,
 	unhighlightMarker,
 } from "@/lib/utils";
 import { Feature } from "ol";
@@ -346,6 +347,8 @@ export default function Home() {
 									style={
 										{
 											"--hover-color":
+												perkColors[spot.color]+"80",
+											"--border-color":
 												perkColors[spot.color],
 										} as React.CSSProperties
 									}
@@ -387,7 +390,13 @@ export default function Home() {
 												},
 											)}
 										</div>
-										<div>Stock: {snakeToTitle(spot.stock)}</div>
+										<div style={{color: "#ffffff80", display: spot.stock=="DEPLETED" ? "none" : "block"}}>S:&nbsp;
+											<span style={{
+												color: stockColors[spot.stock],
+											}}>
+												{snakeToTitle(spot.stock)}
+											</span>
+										</div>
 									</div>
 									<div
 										style={{
