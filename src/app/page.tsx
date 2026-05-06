@@ -391,11 +391,11 @@ export default function Home() {
 											)}
 										</div>
 										<div style={{color: "#ffffff80", display: spot.stock=="DEPLETED" ? "none" : "block"}}>S:&nbsp;
-											<span style={{
+											{/* <span style={{
 												color: stockColors[spot.stock],
-											}}>
+											}}> */}
 												{snakeToTitle(spot.stock)}
-											</span>
+											{/* </span> */}
 										</div>
 									</div>
 									<div
