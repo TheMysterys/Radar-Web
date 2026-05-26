@@ -37,7 +37,9 @@ body {
 
 .spot-display:hover{
 	background-color: var(--hover-color);
-	border: #ffffff 2px solid;
+	border-width: 2px;
+	border-style: solid;
+	border-color: var(--border-color);
 }
 
 .islands-div{

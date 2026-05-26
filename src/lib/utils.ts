@@ -97,6 +97,15 @@ export const islandColors: { [key: string]: string } = {
 	barrenB: "#2b1709",
 }
 
+export const stockColors: { [key: string]: string } = {
+	DEPLETED: "#888888",
+	LOW: "#f57601",
+	MEDIUM: "#efef50",
+	HIGH: "#4ade4b",
+	VERY_HIGH: "#5debeb",
+	PLENTIFUL: "#9f67ed",
+}
+
 export type Filter = {
 	category: string;
 	type: string;
