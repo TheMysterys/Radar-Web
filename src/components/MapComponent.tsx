@@ -46,6 +46,7 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 		map.addLayer(markerLayer);
 
 		let currentFeature: FeatureLike | undefined;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const displayFeatureInfo = function (pixel: Pixel, target: any) {
 			const feature = target.closest(".ol-control")
 				? undefined
@@ -102,10 +103,10 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 					info!.style.visibility = "visible";
 					const spot: FishingSpot = feature.get("fishingSpot");
 					let perksHtml: string = '';
-					formatPerks(spot).map((spot, i) => {
-						perksHtml = perksHtml 
-						+ `<img src="https://islandcdn.themysterys.com/fishing/perks/${spot.icon}" class="items-center" style="display: inline-block; margin-right: 2px; height: 1.5em;">` 
-						+ spot.text 
+					formatPerks(spot).map((spot) => {
+						perksHtml = perksHtml
+						+ `<img src="https://islandcdn.themysterys.com/fishing/perks/${spot.icon}" class="items-center" style="display: inline-block; margin-right: 2px; height: 1.5em;">`
+						+ spot.text
 						+ "</br>"
 					})
 					info!.innerHTML = [
@@ -128,11 +129,11 @@ export default function MapComponent({ island }: { island: IslandNames }) {
 				currentFeature = undefined;
 				return;
 			}
-			displayFeatureInfo(evt.pixel, evt.originalEvent.target);
+			displayFeatureInfo(evt.pixel, evt.originalEvent.target!);
 		});
 
 		map.on("click", function (evt) {
-			displayFeatureInfo(evt.pixel, evt.originalEvent.target);
+			displayFeatureInfo(evt.pixel, evt.originalEvent.target!);
 		});
 
 		map.setTarget(mapContainer.current!);

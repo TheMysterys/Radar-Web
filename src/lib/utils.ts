@@ -1,10 +1,8 @@
 import { Feature } from "ol";
-import { ColorType } from "ol/expr/expression";
 import { Circle } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import Fill from "ol/style/Fill";
-import Icon from "ol/style/Icon";
 import Stroke from "ol/style/Stroke";
 import Style from "ol/style/Style";
 
@@ -176,7 +174,7 @@ export function clearMarkers() {
 }
 
 export function highlightMarker(spot: FishingSpot){
-	let marker = spot.marker
+	const marker = spot.marker
 	const flatCoords = marker.getGeometry()?.getFlatCoordinates() ?? [0, 0]
 	marker.setGeometry(
 		new Circle([flatCoords[0], flatCoords[1]], 10)
@@ -193,11 +191,11 @@ export function highlightMarker(spot: FishingSpot){
 			zIndex: 1
 		})
 	)
-	
+
 }
 
 export function unhighlightMarker(spot: FishingSpot){
-	let marker = spot.marker
+	const marker = spot.marker
 	const flatCoords = marker.getGeometry()?.getFlatCoordinates() ?? [0, 0]
 	marker.setGeometry(
 		new Circle([flatCoords[0], flatCoords[1]], 2.5)
@@ -236,6 +234,7 @@ function matchesFilter(
 		return selectedFilters.every((filter) => {
 			const { category, type, amount } = filter;
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const categoryPerk = (spot.perks as any)[category];
 			if (!categoryPerk) return false;
 
@@ -249,6 +248,7 @@ function matchesFilter(
 		const { category, type, amount } = filter;
 
 		// Access the specific perks category (hooks, magnets, or lures)
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const categoryPerk = (spot.perks as any)[category];
 
 		// Skip if the category doesn't exist
@@ -291,7 +291,7 @@ export function renamePerks(type: string, category: string) {
 
 export function formatPerks(fishingSpot: FishingSpot) {
 	const perks = fishingSpot.perks;
-	let perkDisplays: PerkDisplay[] = [];
+	const perkDisplays: PerkDisplay[] = [];
 
 	// Lures mapping
 	const lureMappings: { [key: string]: string } = {
@@ -354,7 +354,7 @@ export function formatPerks(fishingSpot: FishingSpot) {
 							perkDisplays.push({
 								icon: iconMappings[category]?.[perkType] ?? "",
 								text: `+${amount} ${formattedPerkType}`
-							})	
+							})
 						} else {
 							perkDisplays.push({
 								icon: iconMappings[category]?.[perkType] ?? "",
