@@ -76,7 +76,7 @@ export default function Home() {
 	>("connecting");
 
 	useEffect(() => {
-		const sourceURL = process.env.API_URL || "http://localhost:8879/spots";
+		const sourceURL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8879")+ "/spots";
 
 		let eventSource: EventSource | null = null;
 		let reconnectTimeout: NodeJS.Timeout;
