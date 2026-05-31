@@ -14,14 +14,11 @@ import {
 	IslandNames,
 	perkColors,
 	snakeToTitle,
-	stockColors,
 	unhighlightMarker,
 } from "@/lib/utils";
 import { Feature } from "ol";
 import { Circle } from "ol/geom";
 import Fill from "ol/style/Fill";
-import Icon from "ol/style/Icon";
-import ImageStyle from "ol/style/Image";
 import Stroke from "ol/style/Stroke";
 import Style from "ol/style/Style";
 import { useEffect, useState } from "react";
@@ -44,30 +41,6 @@ export default function Home() {
 
 	const [filteredSpots, setFilteredSpots] = useState<FishingSpot[]>([]);
 
-	function addSpot(data: { island: IslandNames; spot: FishingSpot }) {
-		if (spots[data.island]) {
-			setSpots((prevSpots) => {
-				const currentSpots = prevSpots[data.island];
-
-				const exists = currentSpots.some(
-					(spot) => spot.cords === data.spot.cords,
-				);
-
-				const updatedSpots = exists
-					? currentSpots.map((spot) =>
-							spot.cords === data.spot.cords ? data.spot : spot,
-						)
-					: [...currentSpots, data.spot];
-
-				return {
-					...prevSpots,
-					[data.island]: updatedSpots,
-				};
-			});
-		} else {
-			console.warn(`Category "${data.island}" does not exist.`);
-		}
-	}
 
 	// Fetch data from API
 
@@ -76,6 +49,31 @@ export default function Home() {
 	>("connecting");
 
 	useEffect(() => {
+		function addSpot(data: { island: IslandNames; spot: FishingSpot }) {
+			if (spots[data.island]) {
+				setSpots((prevSpots) => {
+					const currentSpots = prevSpots[data.island];
+
+					const exists = currentSpots.some(
+						(spot) => spot.cords === data.spot.cords,
+					);
+
+					const updatedSpots = exists
+						? currentSpots.map((spot) =>
+								spot.cords === data.spot.cords ? data.spot : spot,
+							)
+						: [...currentSpots, data.spot];
+
+					return {
+						...prevSpots,
+						[data.island]: updatedSpots,
+					};
+				});
+			} else {
+				console.warn(`Category "${data.island}" does not exist.`);
+			}
+		}
+
 		const sourceURL = process.env.API_URL || "http://localhost:8879/spots";
 
 		let eventSource: EventSource | null = null;
@@ -129,6 +127,9 @@ export default function Home() {
 			eventSource?.close();
 			clearTimeout(reconnectTimeout);
 		};
+		// TODO: Refactor this to be independent of page
+		// EventStream handler; only run once on page mount
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Update markers on the map
@@ -229,7 +230,7 @@ export default function Home() {
 				className="my-2 mx-4 flex space-x-2 text-xl font-semibold items-center justify-between"
 			>
 				<div className="flex gap-2 hidable-if-not-enough-space">
-					<img src="/icon.png" className="w-7 h-7 " />
+					<img src="/icon.png" alt="Radar app icon" className="w-7 h-7 " />
 					<h1>Radar</h1>
 				</div>
 				<div className="islands-div">
@@ -243,7 +244,7 @@ export default function Home() {
 						"barren_1",
 						"barren_2",
 						"barren_3",
-					].map((type, i) => {
+					].map((type) => {
 						let classes = "island-button";
 						if (type == island) {
 							classes = "island-button island-button-selected";
@@ -259,9 +260,7 @@ export default function Home() {
 											islandColors[type.split("_")[0]],
 									} as React.CSSProperties
 								}
-								onClick={(e) => {
-									setIsland(type as IslandNames);
-								}}
+								onClick={() => setIsland(type as IslandNames)}
 								key={type}
 							></input>
 						);
@@ -304,8 +303,8 @@ export default function Home() {
 				<MapComponent island={island} />
 				<div
 					id="list"
-					className="mt-4 flex w-full flex-col px-4 text-xl 
-						max-md:flex-1 md:h-auto 
+					className="mt-4 flex w-full flex-col px-4 text-xl
+						max-md:flex-1 md:h-auto
 						md:mt-0 md:w-auto
 						md:shrink-0 min-h-0"
 				>
@@ -355,7 +354,7 @@ export default function Home() {
 									onMouseEnter={() => {
 										highlightMarker(spot);
 									}}
-									onMouseLeave={(event) => {
+									onMouseLeave={() => {
 										unhighlightMarker(spot);
 									}}
 								>
@@ -374,7 +373,8 @@ export default function Home() {
 															className="flex items-center"
 														>
 															<img
-																src={`https://islandcdn.themysterys.com/fishing/perks/${perk.icon}`}
+															  alt=""
+														  	src={`https://islandcdn.themysterys.com/fishing/perks/${perk.icon}`}
 																style={{
 																	height: "1em",
 																	width: "auto",

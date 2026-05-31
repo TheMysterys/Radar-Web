@@ -143,6 +143,7 @@ export default function FilterMenu({
 							X
 						</button>
 						<img
+							alt=""
 							src={`https://islandcdn.themysterys.com/fishing/perks/${filter.category}/${filter.type}.png`}
 							className="w-6 h-6 self-center mr-1"
 						/>
