@@ -1,11 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-	/* config options here */
-};
-
-module.exports = {
-  // Caching images for 1 day
   async headers() {
     return [
       {
